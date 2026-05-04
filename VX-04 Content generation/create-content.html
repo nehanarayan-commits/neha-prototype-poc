@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Content — AI Commerce Visibility</title>
+<style>
+:root {
+  --color-background-primary: #FFFFFF;
+  --color-background-secondary: #F7F8FA;
+  --color-background-tertiary: #F0F2F5;
+  --color-text-primary: rgba(0,0,0,0.87);
+  --color-text-secondary: rgba(0,0,0,0.55);
+  --color-text-tertiary: rgba(0,0,0,0.35);
+  --color-border-tertiary: rgba(0,0,0,0.10);
+  --color-border-secondary: rgba(0,0,0,0.20);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--color-text-primary);background:var(--color-background-tertiary);min-width:1440px;}
+.page{display:none;min-height:100vh;flex-direction:column;}
+.page.active{display:flex;}
+
+/* Topbar */
+.topbar{height:48px;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
+.topbar-logomark{width:24px;height:24px;background:#001B3A;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:500;}
+.topbar-product{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.badge-beta{font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;background:#E6F9F0;color:#085041;border:0.5px solid #5DCAA5;}
+.topbar-spacer{flex:1;}
+.credit-pill{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:#FAEEDA;border:0.5px solid #EF9F27;font-size:12px;color:#633806;font-weight:500;}
+.credit-dot{width:6px;height:6px;border-radius:50%;background:#EF9F27;flex-shrink:0;}
+.topbar-user{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--color-text-secondary);}
+.topbar-avatar{width:28px;height:28px;border-radius:50%;background:#D85A30;color:#fff;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;}
+
+/* Nav tabs */
+.nav-tabs{height:40px;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:flex-end;padding:0 20px;flex-shrink:0;}
+.nav-tab{height:40px;padding:0 16px;font-size:13px;font-weight:400;color:var(--color-text-secondary);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;font-family:inherit;transition:color 0.15s;}
+.nav-tab:hover{color:var(--color-text-primary);}
+.nav-tab.active{color:#D85A30;border-bottom:2px solid #D85A30;font-weight:500;}
+
+/* Layout */
+.main-layout{display:flex;gap:16px;padding:20px;flex:1;min-height:0;}
+.left-panel{width:320px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
+.right-panel{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0;}
+
+/* Cards */
+.card{background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.card-step{font-size:11px;color:var(--color-text-tertiary);}
+.card-body{padding:14px;}
+
+/* Form fields */
+.field-group{display:flex;flex-direction:column;gap:10px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);letter-spacing:0.3px;}
+.field-select{height:32px;padding:0 28px 0 10px;border-radius:8px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);font-size:12px;color:var(--color-text-primary);font-family:inherit;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-color:var(--color-background-secondary);}
+.field-select:focus{outline:none;border-color:var(--color-border-secondary);}
+.divider{height:0.5px;background:var(--color-border-tertiary);margin:2px 0;}
+
+/* Credit row */
+.credit-row{display:flex;align-items:center;justify-content:space-between;}
+.credit-cost-pill{display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:20px;background:#FAEEDA;border:0.5px solid #EF9F27;font-size:11px;color:#633806;}
+.credit-balance-display{font-size:11px;color:var(--color-text-tertiary);}
+.credit-balance-display strong{color:var(--color-text-secondary);font-weight:500;}
+
+/* Buttons */
+.btn-generate{width:100%;height:36px;border-radius:6px;background:#D85A30;color:#fff;border:none;font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;transition:opacity 0.15s;}
+.btn-generate:hover{opacity:0.9;}
+.btn-copy{height:28px;padding:0 12px;border-radius:6px;background:none;border:0.5px solid var(--color-border-tertiary);font-size:12px;color:var(--color-text-secondary);font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.15s;}
+.btn-copy:hover{border-color:var(--color-border-secondary);color:var(--color-text-primary);}
+.btn-regenerate{height:28px;padding:0 12px;border-radius:6px;background:none;border:0.5px solid #D85A30;font-size:12px;color:#D85A30;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:5px;transition:opacity 0.15s;}
+.btn-regenerate:hover{opacity:0.8;}
+.btn-request-changes{height:28px;padding:0 12px;border-radius:6px;background:none;border:0.5px solid #F09595;font-size:12px;color:#791F1F;font-family:inherit;cursor:pointer;flex-shrink:0;transition:opacity 0.15s;}
+.btn-request-changes:hover{opacity:0.8;}
+.btn-approve{height:28px;padding:0 12px;border-radius:6px;background:#085041;color:#fff;border:none;font-size:12px;font-family:inherit;cursor:pointer;flex-shrink:0;transition:opacity 0.15s;}
+.btn-approve:hover{opacity:0.9;}
+.btn-resubmit{height:28px;padding:0 12px;border-radius:6px;background:#633806;color:#fff;border:none;font-size:12px;font-family:inherit;cursor:pointer;flex-shrink:0;transition:opacity 0.15s;}
+.btn-resubmit:hover{opacity:0.9;}
+.btn-auto-refine{height:28px;padding:0 12px;border-radius:6px;background:#185FA5;color:#fff;border:none;font-size:12px;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0;transition:opacity 0.15s;}
+.btn-auto-refine:hover{opacity:0.9;}
+.view-all-link{font-size:11px;color:#185FA5;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;}
+.see-all-link{display:block;font-size:11px;color:#185FA5;text-align:center;margin-top:10px;cursor:pointer;background:none;border:none;font-family:inherit;width:100%;}
+.credit-badge{font-size:10px;padding:1px 5px;border-radius:4px;background:#FAEEDA;color:#633806;border:0.5px solid #EF9F27;}
+.credit-badge-blue{font-size:10px;padding:1px 5px;border-radius:4px;background:#D4E7F7;color:#185FA5;border:0.5px solid #7CB5FF;}
+
+/* Mini library */
+.mini-lib-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.mini-lib-item:last-child{border-bottom:none;}
+.mini-lib-title{font-size:12px;color:var(--color-text-primary);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+.mini-lib-tags{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap;}
+.tag{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);}
+.badge-saved{font-size:10px;padding:2px 7px;border-radius:4px;background:#E1F5EE;color:#085041;border:0.5px solid #5DCAA5;flex-shrink:0;}
+.mini-lib-empty{font-size:12px;color:var(--color-text-tertiary);padding:12px 0;text-align:center;}
+
+/* Step indicator */
+.step-indicator{display:flex;align-items:center;background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:0 20px;height:52px;}
+.step-item{display:flex;align-items:center;gap:8px;}
+.step-connector{flex:1;height:0.5px;background:var(--color-border-tertiary);margin:0 8px;}
+.step-circle{width:22px;height:22px;border-radius:50%;border:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--color-text-tertiary);flex-shrink:0;transition:all 0.2s;}
+.step-label{font-size:12px;color:var(--color-text-tertiary);white-space:nowrap;transition:color 0.2s;}
+.step-item.active .step-circle{background:#D85A30;border-color:#D85A30;color:#fff;}
+.step-item.active .step-label{color:#D85A30;font-weight:500;}
+.step-item.done .step-circle{background:#085041;border-color:#085041;color:#fff;font-size:10px;}
+.step-item.done .step-label{color:#085041;}
+
+/* Loading bar */
+.loading-bar-wrap{height:3px;background:var(--color-border-tertiary);border-radius:2px;overflow:hidden;display:none;}
+.loading-bar-wrap.visible{display:block;}
+.loading-bar{height:100%;background:#D85A30;width:0%;transition:width 1.8s ease;border-radius:2px;}
+
+/* Content card */
+.content-card{background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.output-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;}
+.placeholder-box{width:100%;max-width:480px;border:1.5px dashed var(--color-border-tertiary);border-radius:10px;padding:40px 32px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;}
+.placeholder-icon{width:40px;height:40px;color:var(--color-text-tertiary);}
+.placeholder-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);}
+.placeholder-subtitle{font-size:12px;color:var(--color-text-tertiary);line-height:1.5;}
+.output-area{display:none;flex-direction:column;flex:1;padding:14px;gap:10px;overflow:hidden;}
+.output-area.visible{display:flex;}
+
+/* Output meta row */
+.output-meta-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;}
+.output-meta-tags{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.meta-tag{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);}
+.output-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+/* Status bars */
+.approval-bar{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:#E1F5EE;border:0.5px solid #5DCAA5;flex-shrink:0;}
+.approval-bar.hidden{display:none;}
+.approval-check{width:18px;height:18px;border-radius:50%;background:#5DCAA5;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:10px;}
+.approval-text{flex:1;font-size:12px;color:#085041;}
+.approved-badge{display:none;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:#E1F5EE;border:0.5px solid #5DCAA5;font-size:12px;color:#085041;font-weight:500;flex-shrink:0;}
+.approved-badge.visible{display:flex;}
+.changes-bar{display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:#FAEEDA;border:0.5px solid #EF9F27;flex-shrink:0;}
+.changes-bar.visible{display:flex;}
+.changes-text{flex:1;font-size:12px;color:#633806;}
+
+/* Textarea */
+.content-textarea-wrap{flex:1;border:0.5px solid var(--color-border-tertiary);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+.textarea-inner{flex:1;padding:10px 12px;overflow-y:auto;}
+.content-textarea{width:100%;min-height:200px;height:100%;resize:none;border:none;background:var(--color-background-primary);font-size:12px;line-height:1.7;color:var(--color-text-primary);font-family:inherit;outline:none;}
+.content-textarea[readonly]{background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:default;}
+.refine-pills{display:flex;align-items:center;gap:6px;padding:8px 12px;border-top:0.5px solid var(--color-border-tertiary);flex-wrap:wrap;flex-shrink:0;}
+.refine-pills.hidden{display:none;}
+.refine-label{font-size:11px;color:var(--color-text-tertiary);flex-shrink:0;}
+.refine-pill{font-size:11px;padding:3px 10px;border-radius:20px;background:#E6F1FB;color:#0C447C;border:0.5px solid #85B7EB;cursor:pointer;font-family:inherit;transition:opacity 0.15s;}
+.refine-pill:hover{opacity:0.8;}
+.textarea-footer{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);flex-shrink:0;}
+.textarea-footer.hidden{display:none;}
+.refine-input{flex:1;height:28px;padding:0 10px;border-radius:6px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);font-size:12px;color:var(--color-text-primary);font-family:inherit;outline:none;}
+.refine-input:focus{border-color:var(--color-border-secondary);}
+.refine-input::placeholder{color:var(--color-text-tertiary);}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;padding:10px 16px;background:#1a1a2e;color:#fff;border-radius:8px;font-size:12px;z-index:600;opacity:0;transform:translateY(8px);transition:all 0.2s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* Library page */
+.lib-toparea{padding:20px 20px 0;display:flex;flex-direction:column;gap:14px;}
+.lib-titlerow{display:flex;align-items:center;justify-content:space-between;}
+.lib-titleleft{display:flex;align-items:center;gap:10px;}
+.lib-title{font-size:16px;font-weight:500;color:var(--color-text-primary);}
+.lib-count{font-size:12px;color:var(--color-text-tertiary);}
+.filter-pills{display:flex;align-items:center;gap:6px;}
+.filter-pill{height:28px;padding:0 12px;border-radius:20px;border:0.5px solid var(--color-border-tertiary);background:none;font-size:12px;color:var(--color-text-secondary);font-family:inherit;cursor:pointer;transition:all 0.15s;}
+.filter-pill:hover{border-color:var(--color-border-secondary);color:var(--color-text-primary);}
+.filter-pill.active{background:#1a1a2e;color:#fff;border-color:#1a1a2e;}
+.lib-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px 20px 20px;}
+.lib-card{background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);padding:14px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:border-color 0.15s, box-shadow 0.15s;}
+.lib-card:hover{border-color:var(--color-border-secondary);box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.lib-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.lib-card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);line-height:1.4;}
+.lib-card-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.lib-card-preview{font-size:12px;color:var(--color-text-secondary);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.lib-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
+.lib-card-date{font-size:11px;color:var(--color-text-tertiary);}
+.lib-empty{grid-column:1 / -1;text-align:center;padding:60px 20px;color:var(--color-text-tertiary);font-size:13px;}
+
+/* Status badges */
+.badge-approved{font-size:10px;padding:2px 7px;border-radius:4px;background:#E1F5EE;color:#085041;border:0.5px solid #5DCAA5;flex-shrink:0;white-space:nowrap;}
+.badge-published{font-size:10px;padding:2px 7px;border-radius:4px;background:#EBF3FF;color:#0052CC;border:0.5px solid #B3D4FF;flex-shrink:0;white-space:nowrap;}
+
+.btn-back{height:32px;padding:0 14px;border-radius:6px;background:none;border:0.5px solid var(--color-border-tertiary);font-size:12px;color:var(--color-text-secondary);font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
+.btn-back:hover{border-color:var(--color-border-secondary);color:var(--color-text-primary);}
+
+/* Article viewer slide-in */
+.viewer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:100;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.viewer-backdrop.open{opacity:1;pointer-events:all;}
+.viewer-panel{position:fixed;top:0;right:0;height:100vh;width:760px;background:var(--color-background-primary);z-index:101;box-shadow:-4px 0 24px rgba(0,0,0,0.12);transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;overflow:hidden;}
+.viewer-panel.open{transform:translateX(0);}
+.viewer-header{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 20px 14px;border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0;gap:12px;}
+.viewer-header-left{display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;}
+.viewer-title-row{display:flex;align-items:flex-start;gap:10px;}
+.viewer-title{font-size:15px;font-weight:500;color:var(--color-text-primary);line-height:1.4;flex:1;}
+.viewer-close{width:28px;height:28px;border-radius:6px;background:none;border:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text-secondary);flex-shrink:0;transition:all 0.15s;}
+.viewer-close:hover{border-color:var(--color-border-secondary);color:var(--color-text-primary);}
+.viewer-meta-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.viewer-subheader{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0;gap:12px;}
+.viewer-status-area{display:flex;align-items:center;gap:10px;}
+.viewer-status-label{font-size:11px;color:var(--color-text-tertiary);}
+.btn-publish{height:28px;padding:0 14px;border-radius:6px;background:#185FA5;color:#fff;border:none;font-size:12px;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:5px;transition:opacity 0.15s;}
+.btn-publish:hover{opacity:0.9;}
+.viewer-published-indicator{display:flex;align-items:center;gap:6px;font-size:12px;color:#0052CC;}
+.viewer-body{flex:1;overflow-y:auto;padding:24px 28px;}
+.viewer-body h1{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:16px;line-height:1.4;}
+.viewer-body h2{font-size:14px;font-weight:500;color:var(--color-text-primary);margin:20px 0 8px;}
+.viewer-body p{font-size:13px;line-height:1.75;color:var(--color-text-secondary);margin-bottom:12px;}
+.viewer-body ul,.viewer-body ol{padding-left:20px;margin-bottom:12px;}
+.viewer-body li{font-size:13px;line-height:1.75;color:var(--color-text-secondary);margin-bottom:4px;}
+.viewer-body strong{color:var(--color-text-primary);font-weight:500;}
+.viewer-body em{color:var(--color-text-tertiary);font-style:italic;}
+.viewer-body table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:12px;}
+.viewer-body th{text-align:left;padding:8px 10px;border-bottom:0.5px solid var(--color-border-secondary);font-weight:500;color:var(--color-text-primary);background:var(--color-background-secondary);}
+.viewer-body td{padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);}
+.viewer-footer{padding:14px 20px;border-top:0.5px solid var(--color-border-tertiary);font-size:11px;color:var(--color-text-tertiary);flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: Create content -->
+<div id="page-create" class="page active">
+  <div class="topbar">
+    <div class="topbar-logomark">PP</div>
+    <span class="topbar-product">AI Commerce Visibility</span>
+    <span class="badge-beta">AI generated (beta)</span>
+    <div class="topbar-spacer"></div>
+    <div class="credit-pill">
+      <span class="credit-dot"></span>
+      <span id="credit-topbar">124 credits</span>
+    </div>
+    <div class="topbar-user">
+      <div class="topbar-avatar">JD</div>
+      <span>Jane Doe</span>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab" id="tab-insights">Insights</button>
+    <button class="nav-tab active" id="tab-create">Create content</button>
+  </div>
+  <div class="main-layout">
+    <div class="left-panel">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Content inputs</span>
+          <span class="card-step">Step 1 of 4</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <div class="field">
+              <label class="field-label">Content format</label>
+              <select class="field-select" id="sel-format">
+                <option>Blog post</option><option>Listicle</option><option>Comparison article</option>
+                <option>Social post</option><option>Email</option><option>Product description</option>
+              </select>
+            </div>
+            <div class="divider"></div>
+            <div class="field">
+              <label class="field-label">Product category</label>
+              <select class="field-select" id="sel-category">
+                <option>Running Shoes</option><option>Coffee Pods</option><option>Sportswear</option><option>Outdoor Gear</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Market</label>
+              <select class="field-select" id="sel-market">
+                <option>United States</option><option>Germany</option><option>France</option><option>United Kingdom</option><option>Netherlands</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Persona</label>
+              <select class="field-select" id="sel-persona">
+                <option>Marathon Trainer</option><option>Casual Runner</option><option>Performance Athlete</option><option>Beginner Runner</option>
+              </select>
+            </div>
+            <div class="divider"></div>
+            <div class="field">
+              <label class="field-label">Target LLM</label>
+              <select class="field-select" id="sel-llm">
+                <option>All models</option><option>ChatGPT (35%)</option><option>Perplexity (15%)</option>
+                <option>Gemini (20%)</option><option>Claude (20%)</option><option>Google AI (10%)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Language</label>
+              <select class="field-select" id="sel-language">
+                <option>English</option><option>German</option><option>French</option><option>Spanish</option><option>Dutch</option><option>Italian</option>
+              </select>
+            </div>
+            <div class="divider"></div>
+            <div class="credit-row">
+              <div class="credit-cost-pill"><span style="color:#EF9F27;font-size:8px;">●</span> 2 credits per generation</div>
+              <div class="credit-balance-display">Balance: <strong id="credit-balance">124</strong></div>
+            </div>
+            <button class="btn-generate" id="btn-generate">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Generate content
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Content library</span>
+          <button class="view-all-link" id="btn-view-all">View all</button>
+        </div>
+        <div class="card-body" id="mini-lib-body">
+          <div class="mini-lib-empty">No saved content yet</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="step-indicator">
+        <div class="step-item active" id="step-1"><div class="step-circle" id="sc-1">1</div><span class="step-label">Configure</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" id="step-2"><div class="step-circle" id="sc-2">2</div><span class="step-label">Generate</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" id="step-3"><div class="step-circle" id="sc-3">3</div><span class="step-label">Review &amp; refine</span></div>
+        <div class="step-connector"></div>
+        <div class="step-item" id="step-4"><div class="step-circle" id="sc-4">4</div><span class="step-label">Approve</span></div>
+      </div>
+      <div class="loading-bar-wrap" id="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
+      <div class="content-card">
+        <div class="output-placeholder" id="output-placeholder">
+          <div class="placeholder-box">
+            <svg class="placeholder-icon" viewBox="0 0 40 40" fill="none">
+              <rect x="8" y="5" width="24" height="30" rx="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14 14h12M14 19h12M14 24h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div class="placeholder-title">Configure your inputs</div>
+            <div class="placeholder-subtitle">Select format, category, market, persona, LLM, and language — then click Generate content</div>
+          </div>
+        </div>
+        <div class="output-area" id="output-area">
+          <div class="output-meta-row">
+            <div class="output-meta-tags" id="output-meta-tags"></div>
+            <div class="output-actions">
+              <button class="btn-copy" id="btn-copy">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="4" y="4" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 7.5H2a1 1 0 01-1-1V2a1 1 0 011-1h4.5a1 1 0 011 1v.5" stroke="currentColor" stroke-width="1.2"/></svg>
+                Copy
+              </button>
+              <button class="btn-regenerate" id="btn-regenerate">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M10 6A4 4 0 012.5 3.5M2 1v2.5h2.5M2 6a4 4 0 007.5 2.5M10 11V8.5H7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Regenerate <span class="credit-badge">2C</span>
+              </button>
+            </div>
+          </div>
+          <div class="approval-bar" id="approval-bar">
+            <div class="approval-check">✓</div>
+            <span class="approval-text">Content is ready. Review and approve to save to your content library.</span>
+            <button class="btn-request-changes" id="btn-request-changes">Request changes</button>
+            <button class="btn-approve" id="btn-approve">Approve &amp; save</button>
+          </div>
+          <div class="approved-badge" id="approved-badge">
+            <span style="color:#5DCAA5;font-size:14px;">✓</span>
+            Approved and saved to library
+          </div>
+          <div class="changes-bar" id="changes-bar">
+            <span class="changes-text">Changes requested. Edit the content below and re-submit for approval.</span>
+            <button class="btn-resubmit" id="btn-resubmit">Re-submit</button>
+          </div>
+          <div class="content-textarea-wrap">
+            <div class="textarea-inner">
+              <textarea class="content-textarea" id="content-textarea"></textarea>
+            </div>
+            <div class="refine-pills" id="refine-pills">
+              <span class="refine-label">Quick refine:</span>
+              <button class="refine-pill" data-refine="concise">More concise</button>
+              <button class="refine-pill" data-refine="technical">More technical</button>
+              <button class="refine-pill" data-refine="cta">Stronger CTA</button>
+              <button class="refine-pill" data-refine="citations">Optimise for AI citations</button>
+              <button class="refine-pill" data-refine="beginner">Beginner-friendly</button>
+            </div>
+            <div class="textarea-footer" id="textarea-footer">
+              <input class="refine-input" id="refine-input" type="text" placeholder="Describe how to refine this content…">
+              <button class="btn-auto-refine" id="btn-auto-refine">Auto-refine <span class="credit-badge-blue">1C</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: Content library -->
+<div id="page-library" class="page">
+  <div class="topbar">
+    <div class="topbar-logomark">PP</div>
+    <span class="topbar-product">AI Commerce Visibility</span>
+    <span class="badge-beta">AI generated (beta)</span>
+    <div class="topbar-spacer"></div>
+    <div class="credit-pill">
+      <span class="credit-dot"></span>
+      <span id="credit-topbar-lib">124 credits</span>
+    </div>
+    <div class="topbar-user">
+      <div class="topbar-avatar">JD</div>
+      <span>Jane Doe</span>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab" id="lib-tab-insights">Insights</button>
+    <button class="nav-tab active">Create content</button>
+  </div>
+  <div class="lib-toparea">
+    <div class="lib-titlerow">
+      <div class="lib-titleleft">
+        <button class="btn-back" id="btn-back">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Back
+        </button>
+        <span class="lib-title">Content library</span>
+        <span class="lib-count" id="lib-count">0 items</span>
+      </div>
+      <div class="filter-pills" id="filter-pills">
+        <button class="filter-pill active" data-filter="All">All</button>
+        <button class="filter-pill" data-filter="Blog post">Blog post</button>
+        <button class="filter-pill" data-filter="Listicle">Listicle</button>
+        <button class="filter-pill" data-filter="Comparison article">Comparison article</button>
+      </div>
+    </div>
+  </div>
+  <div class="lib-grid" id="lib-grid"></div>
+
+  <!-- Article viewer slide-in -->
+  <div class="viewer-backdrop" id="viewer-backdrop"></div>
+  <div class="viewer-panel" id="viewer-panel">
+    <div class="viewer-header">
+      <div class="viewer-header-left">
+        <div class="viewer-title-row">
+          <div class="viewer-title" id="viewer-title"></div>
+        </div>
+        <div class="viewer-meta-row" id="viewer-meta-row"></div>
+      </div>
+      <button class="viewer-close" id="viewer-close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="viewer-subheader">
+      <div class="viewer-status-area">
+        <span class="viewer-status-label">Status</span>
+        <div id="viewer-status-badge"></div>
+      </div>
+      <div id="viewer-publish-action"></div>
+    </div>
+    <div class="viewer-body" id="viewer-body"></div>
+    <div class="viewer-footer" id="viewer-footer"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var TEMPLATES = {
+  "Blog post_Running Shoes": {
+    title: "The marathon runner's guide to long-distance shoe performance",
+    body: "# The marathon runner's guide to long-distance shoe performance\n\nWhen AI models answer queries about marathon shoes, a handful of performance attributes dominate every recommendation: cushioning stack height, heel-to-toe drop, carbon plate technology, and long-run durability.\n\n## What AI citations prioritise\n\nAnalysis of 2,400 AI-generated responses across ChatGPT, Perplexity, and Gemini shows that factual, spec-driven content earns citations at 3.2× the rate of opinion-based editorial. Brands that structure content around measurable claims — \"38mm stack height\", \"4mm drop\", \"300-mile outsole durability\" — consistently outrank competitors like Brooks Running, Nike Running, and Asics in AI-generated shortlists.\n\n## Key features to evaluate\n\n**Stack height** determines long-run cushioning. Models recommend 36–40mm for marathon distances, citing reduced fatigue after the 30km mark.\n\n**Heel-to-toe drop** affects strike pattern. A 4–6mm drop suits mid-foot strikers; zero drop requires a 12-week adaptation period that AI models frequently flag as an injury risk.\n\n**Carbon plate** options from Adidas Running and Nike Running dominate AI citation counts in the performance tier. Content that explains the plate geometry — propulsion angle, stiffness rating — earns disproportionate visibility.\n\n**Durability** claims backed by kilometre data outperform subjective descriptors. \"450km outsole lifespan on asphalt\" converts better than \"long-lasting build quality.\"\n\n## Building content AI models cite\n\nStructure content with clear ## headings, explicit numeric claims, and comparison context. Mention what the category leader does well and where mid-range options close the gap. AI models reward content that helps users make decisions — not content that simply promotes a product."
+  },
+  "Blog post_Coffee Pods": {
+    title: "What AI models recommend when you search for coffee pods",
+    body: "# What AI models recommend when you search for coffee pods\n\nAI models are increasingly the first stop for product research. When users ask \"best coffee pods for home espresso,\" the recommendations that appear are shaped by content signals — not ad spend. Understanding those signals is how brands like Nespresso build durable AI visibility.\n\n## How AI evaluates coffee pod content\n\nAcross 1,800 AI-generated coffee pod recommendations, the attributes cited most frequently are: taste profile descriptions, machine compatibility data, sustainability certifications, and price-per-cup transparency.\n\n## Top-cited content attributes\n\n**Taste reviews with specificity** earn citations. \"Notes of dark chocolate and dried fruit, medium acidity, intensity 9\" outperforms \"rich, full-bodied flavour.\"\n\n**Machine compatibility** is the most-searched functional attribute. Nespresso Original versus Vertuo distinctions appear in 67% of AI responses — content that addresses this cleanly is rewarded.\n\n**Sustainability credentials** matter. Certified compostable pods from Lavazza and Illy are cited favourably. Certifications with third-party names (Rainforest Alliance, UTZ) drive higher citation rates than brand-owned terminology.\n\n**Price-per-cup** transparency shapes perceived value. Content that states \"€0.43 per pod at subscription pricing\" performs better than \"affordable premium coffee.\"\n\n## Building content AI models cite\n\nPublish content that answers the specific questions AI models receive. State intensity ratings, origin data, and machine compatibility in the first 150 words — that is the content window AI models draw from most frequently."
+  },
+  "Listicle_Running Shoes": {
+    title: "7 things AI models won't tell you about marathon running shoes",
+    body: "# 7 things AI models won't tell you about marathon running shoes\n\n**1. Cushioning stack height varies across colourways.** The same model can differ by 2–3mm depending on the manufacturing run. Asics and Brooks Running both acknowledge this in technical documentation — AI models rarely surface it.\n\n**2. Mileage-dependent fit matters more than size.** Feet swell 0.5–1 full size over a marathon. Content addressing fit at kilometre 35 earns outsized AI citation rates compared to standard sizing guidance.\n\n**3. Carbon plates penalise inefficient form.** Nike Running and Adidas Running carbon plate shoes improve economy by 2–4% for efficient runners — and increase injury risk for heel strikers. AI models typically omit the condition.\n\n**4. Drop affects injury sites, not speed.** A 12mm drop shifts load to the knee; a 4mm drop shifts it to the Achilles. Neither is safer without a transition period.\n\n**5. Break-in period varies by foam compound.** PEBA foams require 15–20km to reach optimal rebound. EVA foams perform identically from day one.\n\n**6. Rotation extends shoe lifespan by 40%.** Foam compression requires 24–48 hours to recover. Alternating two pairs extends effective mileage from 500km to 700km per pair.\n\n**7. Foot width is undersized in AI recommendations.** Most AI shortlists recommend standard D-width shoes. Wide-fit variants from Brooks Running and Asics appear in fewer than 8% of AI-generated recommendations."
+  },
+  "Listicle_Coffee Pods": {
+    title: "6 things AI won't tell you when recommending coffee pods",
+    body: "# 6 things AI won't tell you when recommending coffee pods\n\n**1. Freshness dating is inconsistently labelled.** Nespresso, Lavazza, and Illy use different roast-date conventions. AI models cite \"best before\" dates, which can be 24 months after roasting — well past peak flavour.\n\n**2. Machine pressure affects extraction differently across pod formats.** A 19-bar home machine extracts a Nescafé pod differently than a 15-bar office machine.\n\n**3. Intensity ratings are brand-defined, not standardised.** Nespresso intensity 10 and Lavazza intensity 10 are not the same. Content contextualising intensity against TDS percentage performs better in AI citations.\n\n**4. Sustainability claims vary in verifiability.** Rainforest Alliance and UTZ certifications are third-party verified. AI models increasingly distinguish these from brand-owned \"eco-friendly\" descriptors.\n\n**5. Price-per-cup comparisons mislead without volume context.** A €0.43 Nespresso pod versus a €0.28 Nescafé pod ignores extraction volume differences. Content that normalises by espresso shot (25–30ml) earns more precise AI citations.\n\n**6. Subscription pricing creates a loyalty trap AI models don't flag.** Subscription discounts of 10–15% exist across Nespresso, Lavazza, and Starbucks. Cancellation friction is rarely surfaced in AI recommendations."
+  },
+  "Comparison article_Running Shoes": {
+    title: "Marathon running shoes compared: what the data actually says",
+    body: "# Marathon running shoes compared: what the data actually says\n\n## Methodology\n\nThis comparison draws on AI citation frequency data across 3,200 marathon shoe queries, performance specification sheets, and user-reported durability data.\n\n## Comparison\n\nFeature | Category leader | Mid-range | Value pick\n--- | --- | --- | ---\nStack height | 40mm PEBA | 36mm EVA blend | 32mm EVA\nCarbon plate | Full-length | Partial / nylon | None\nHeel-to-toe drop | 4mm | 6mm | 8mm\nWeight (per shoe) | 228g | 265g | 290g\nAI visibility score | 87/100 | 64/100 | 41/100\n\n## What earns AI citations\n\nBrands like Nike Running and Adidas Running dominate the category leader tier because their technical content is structured for AI retrieval. Explicit stack height, carbon plate geometry, and durability kilometre claims appear in the first 200 words of their highest-cited pages.\n\nBrooks Running and Asics occupy the mid-range tier with content that emphasises injury prevention — attributes AI models cite when users include injury-related terms in queries.\n\n## What to do\n\nAudit your top product pages for numeric specificity. Replace \"excellent cushioning\" with \"38mm stack height\". Replace \"durable construction\" with \"500km outsole lifespan on tarmac\"."
+  },
+  "Comparison article_Coffee Pods": {
+    title: "Coffee pods compared: what AI models actually recommend",
+    body: "# Coffee pods compared: what AI models actually recommend\n\n## Methodology\n\nAnalysis of 2,600 AI-generated coffee pod responses across ChatGPT, Perplexity, and Gemini, cross-referenced against product specification data and verified sustainability certifications.\n\n## Comparison\n\nAttribute | Premium | Mid | Budget\n--- | --- | --- | ---\nAI visibility score | 82/100 | 58/100 | 29/100\nTaste rating (consensus) | 8.4/10 | 7.1/10 | 6.2/10\nSustainability cert | Rainforest Alliance | UTZ | None verified\nPrice per pod (€) | 0.43–0.52 | 0.28–0.38 | 0.18–0.24\n\n## What earns AI citations\n\nNespresso occupies the premium tier primarily because product pages contain machine compatibility matrices, intensity-to-EBC cross-references, and certified sustainability claims — the three attributes AI models cite most frequently.\n\nLavazza and Illy hold mid-tier positions with strong taste rating data but weaker machine compatibility coverage.\n\n## What to do\n\nPrioritise machine compatibility content and third-party sustainability certifications. These are the highest-signal attributes AI models use to differentiate coffee pod recommendations."
+  }
+};
+
+function getTemplate(format, category) {
+  var key = format + '_' + category;
+  if (TEMPLATES[key]) return TEMPLATES[key];
+  return {
+    title: category + ': building AI-visible content for ' + format.toLowerCase(),
+    body: '# ' + category + ': building AI-visible content\n\nThis ' + format.toLowerCase() + ' is optimised for ' + category.toLowerCase() + ' queries, tailored for the selected LLM and market.\n\n## Why AI visibility matters\n\nWhen users ask AI models about ' + category.toLowerCase() + ', the recommendations they receive are shaped by structured, factual content. Brands that publish explicit attribute data, comparison context, and measurable claims earn citation rates 3–4× higher than brands relying on descriptive copy.\n\n## Key content signals\n\n- **Numeric specificity**: Measurements, ratings, and percentages outperform qualitative descriptors.\n- **Comparison context**: Content that positions products relative to named competitors earns higher trust signals.\n- **Third-party validation**: Certifications and independent test results are cited preferentially over brand claims.\n\n## Next steps\n\nReview and edit this content to add category-specific numeric claims. Approve and save to your content library to track performance.'
+  };
+}
+
+var credits = 124;
+var library = [];
+var activeFilter = 'All';
+var isGenerated = false;
+var isApproved = false;
+var viewerOpenIdx = -1;
+
+function syncCredits() {
+  document.getElementById('credit-topbar').textContent = credits + ' credits';
+  document.getElementById('credit-topbar-lib').textContent = credits + ' credits';
+  document.getElementById('credit-balance').textContent = credits;
+}
+
+function deduct(n) {
+  credits = Math.max(0, credits - n);
+  syncCredits();
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2000);
+}
+
+function setStep(n) {
+  for (var i = 1; i <= 4; i++) {
+    var el = document.getElementById('step-' + i);
+    var sc = document.getElementById('sc-' + i);
+    el.classList.remove('active', 'done');
+    if (i < n) { el.classList.add('done'); sc.textContent = '✓'; }
+    else if (i === n) { el.classList.add('active'); sc.textContent = String(i); }
+    else { sc.textContent = String(i); }
+  }
+}
+
+function getSelections() {
+  return {
+    format: document.getElementById('sel-format').value,
+    category: document.getElementById('sel-category').value,
+    market: document.getElementById('sel-market').value,
+    persona: document.getElementById('sel-persona').value,
+    llm: document.getElementById('sel-llm').value,
+    language: document.getElementById('sel-language').value
+  };
+}
+
+function statusBadgeHtml(status) {
+  if (status === 'published') return '<span class="badge-published">Published</span>';
+  return '<span class="badge-approved">Approved</span>';
+}
+
+function renderMiniLib() {
+  var body = document.getElementById('mini-lib-body');
+  if (library.length === 0) {
+    body.innerHTML = '<div class="mini-lib-empty">No saved content yet</div>';
+    return;
+  }
+  var show = library.slice().reverse().slice(0, 3);
+  var html = show.map(function(item) {
+    return '<div class="mini-lib-item"><div style="min-width:0;flex:1">' +
+      '<div class="mini-lib-title">' + item.title + '</div>' +
+      '<div class="mini-lib-tags"><span class="tag">' + item.format + '</span><span class="tag">' + item.category + '</span></div>' +
+      '</div>' + statusBadgeHtml(item.status) + '</div>';
+  }).join('');
+  if (library.length > 3) {
+    html += '<button class="see-all-link" id="see-all-link">See all ' + library.length + ' pieces</button>';
+  }
+  body.innerHTML = html;
+  var sa = document.getElementById('see-all-link');
+  if (sa) sa.addEventListener('click', function(){ goPage('library'); });
+}
+
+function renderLibGrid(filter) {
+  activeFilter = filter;
+  document.querySelectorAll('#filter-pills .filter-pill').forEach(function(p) {
+    p.classList.toggle('active', p.dataset.filter === filter);
+  });
+  var items = filter === 'All' ? library : library.filter(function(i){ return i.format === filter; });
+  var approvedCount = library.filter(function(i){ return i.status === 'approved'; }).length;
+  var publishedCount = library.filter(function(i){ return i.status === 'published'; }).length;
+  document.getElementById('lib-count').textContent = library.length + ' items · ' + approvedCount + ' approved · ' + publishedCount + ' published';
+  if (items.length === 0) {
+    document.getElementById('lib-grid').innerHTML = '<div class="lib-empty">No content matching this filter yet</div>';
+    return;
+  }
+  document.getElementById('lib-grid').innerHTML = items.map(function(item, i) {
+    var realIdx = library.indexOf(item);
+    return '<div class="lib-card" data-idx="' + realIdx + '">' +
+      '<div class="lib-card-top"><div class="lib-card-title">' + item.title + '</div>' + statusBadgeHtml(item.status) + '</div>' +
+      '<div class="lib-card-tags"><span class="tag">' + item.format + '</span><span class="tag">' + item.category + '</span><span class="tag">' + item.llm + '</span><span class="tag">' + item.language + '</span></div>' +
+      '<div class="lib-card-preview">' + item.preview + '</div>' +
+      '<div class="lib-card-footer"><span class="lib-card-date">' + item.date + '</span>' +
+      (item.status === 'approved' ? '<span style="font-size:11px;color:#185FA5;">Click to view &amp; publish →</span>' : '<span style="font-size:11px;color:var(--color-text-tertiary);">Click to view →</span>') +
+      '</div></div>';
+  }).join('');
+  document.getElementById('lib-grid').addEventListener('click', function(e) {
+    var card = e.target.closest('.lib-card');
+    if (card) openViewer(parseInt(card.dataset.idx, 10));
+  });
+}
+
+function markdownToHtml(md) {
+  var lines = md.split('\n');
+  var html = '';
+  var inList = false;
+  var inTable = false;
+  var tableHeaderDone = false;
+
+  function closeList() { if (inList) { html += '</ul>'; inList = false; } }
+  function closeTable() { if (inTable) { html += '</tbody></table>'; inTable = false; tableHeaderDone = false; } }
+
+  function inlineFormat(text) {
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    return text;
+  }
+
+  lines.forEach(function(line) {
+    if (/^\|/.test(line)) {
+      if (!inTable) {
+        closeList();
+        html += '<table><thead><tr>';
+        inTable = true;
+        tableHeaderDone = false;
+        var cells = line.split('|').filter(function(c){ return c.trim(); });
+        cells.forEach(function(c){ html += '<th>' + c.trim() + '</th>'; });
+        html += '</tr></thead>';
+      } else if (/^\|[-\s|]+$/.test(line)) {
+        html += '<tbody>';
+        tableHeaderDone = true;
+      } else if (tableHeaderDone) {
+        var cells = line.split('|').filter(function(c){ return c.trim(); });
+        html += '<tr>';
+        cells.forEach(function(c){ html += '<td>' + c.trim() + '</td>'; });
+        html += '</tr>';
+      }
+      return;
+    }
+    closeTable();
+
+    if (/^# /.test(line)) {
+      closeList();
+      html += '<h1>' + inlineFormat(line.replace(/^# /, '')) + '</h1>';
+    } else if (/^## /.test(line)) {
+      closeList();
+      html += '<h2>' + inlineFormat(line.replace(/^## /, '')) + '</h2>';
+    } else if (/^- /.test(line) || /^\d+\. /.test(line)) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += '<li>' + inlineFormat(line.replace(/^[-\d.]+\s/, '')) + '</li>';
+    } else if (line.trim() === '') {
+      closeList();
+    } else {
+      closeList();
+      if (line.trim()) html += '<p>' + inlineFormat(line) + '</p>';
+    }
+  });
+  closeList();
+  closeTable();
+  return html;
+}
+
+function openViewer(idx) {
+  var item = library[idx];
+  if (!item) return;
+  viewerOpenIdx = idx;
+  document.getElementById('viewer-title').textContent = item.title;
+  document.getElementById('viewer-meta-row').innerHTML =
+    ['format','category','market','llm','language'].map(function(k){
+      return '<span class="meta-tag">' + item[k] + '</span>';
+    }).join('');
+  document.getElementById('viewer-status-badge').innerHTML = statusBadgeHtml(item.status);
+  document.getElementById('viewer-body').innerHTML = markdownToHtml(item.body);
+  document.getElementById('viewer-footer').textContent = 'Saved ' + item.date + ' · ' + item.format + ' · ' + item.market;
+  refreshViewerPublishArea(item);
+  document.getElementById('viewer-backdrop').classList.add('open');
+  document.getElementById('viewer-panel').classList.add('open');
+}
+
+function refreshViewerPublishArea(item) {
+  var area = document.getElementById('viewer-publish-action');
+  if (item.status === 'approved') {
+    area.innerHTML = '<button class="btn-publish" id="btn-publish-viewer">' +
+      '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3-4 3 4M2 10h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      'Mark as published</button>';
+    document.getElementById('btn-publish-viewer').addEventListener('click', function() {
+      publishItem(viewerOpenIdx);
+    });
+  } else {
+    area.innerHTML = '<div class="viewer-published-indicator">' +
+      '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#0052CC" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="#0052CC" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      'Published</div>';
+  }
+}
+
+function publishItem(idx) {
+  library[idx].status = 'published';
+  document.getElementById('viewer-status-badge').innerHTML = statusBadgeHtml('published');
+  refreshViewerPublishArea(library[idx]);
+  renderLibGrid(activeFilter);
+  renderMiniLib();
+  showToast('Marked as published');
+}
+
+function closeViewer() {
+  document.getElementById('viewer-backdrop').classList.remove('open');
+  document.getElementById('viewer-panel').classList.remove('open');
+  viewerOpenIdx = -1;
+}
+
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  closeViewer();
+  if (id === 'library') {
+    document.getElementById('page-library').classList.add('active');
+    renderLibGrid(activeFilter);
+  } else {
+    document.getElementById('page-create').classList.add('active');
+  }
+}
+
+function doGenerate() {
+  if (credits < 2) { showToast('Insufficient credits'); return; }
+  setStep(2);
+  var wrap = document.getElementById('loading-bar-wrap');
+  var bar = document.getElementById('loading-bar');
+  wrap.classList.add('visible');
+  bar.style.width = '0%';
+  setTimeout(function(){ bar.style.width = '100%'; }, 30);
+  setTimeout(function() {
+    wrap.classList.remove('visible');
+    bar.style.width = '0%';
+    deduct(2);
+    var sel = getSelections();
+    var tpl = getTemplate(sel.format, sel.category);
+    document.getElementById('output-placeholder').style.display = 'none';
+    document.getElementById('output-area').classList.add('visible');
+    var tags = ['format','category','market','persona','llm','language'];
+    document.getElementById('output-meta-tags').innerHTML = tags.map(function(k){
+      return '<span class="meta-tag">' + sel[k] + '</span>';
+    }).join('');
+    var ta = document.getElementById('content-textarea');
+    ta.value = tpl.body;
+    ta.removeAttribute('readonly');
+    document.getElementById('approval-bar').classList.remove('hidden');
+    document.getElementById('approved-badge').classList.remove('visible');
+    document.getElementById('changes-bar').classList.remove('visible');
+    document.getElementById('refine-pills').classList.remove('hidden');
+    document.getElementById('textarea-footer').classList.remove('hidden');
+    isGenerated = true;
+    isApproved = false;
+    setStep(3);
+  }, 1800);
+}
+
+function applyRefine(instruction) {
+  if (!isGenerated || isApproved) return;
+  if (credits < 1) { showToast('Insufficient credits'); return; }
+  var ta = document.getElementById('content-textarea');
+  var c = ta.value;
+  if (instruction === 'concise') {
+    var lines = c.split('\n').filter(function(l){ return l.trim(); });
+    c = lines.slice(0, Math.ceil(lines.length * 0.6)).join('\n') + '\n\n*[Refined: condensed for clarity]*';
+  } else if (instruction === 'technical') {
+    c += '\n\n## Technical specifications\n- Material composition: PEBA 11 foam compound (density: 0.18 g/cm³)\n- Stack height: 38mm heel / 34mm forefoot\n- Plate stiffness index: 87/100 (full-length carbon)\n- Outsole compound: Continental rubber (ISO 4649 grade A)\n- Weight: 228g (UK 8)\n- Drop: 4mm';
+  } else if (instruction === 'cta') {
+    c += '\n\n## Ready to act?\nYour content strategy directly shapes where your brand appears in AI-generated recommendations. Start with measurable claims, structured headings, and verified certifications — then track your AI citation rate monthly. Brands that invest in structured content see a 3× improvement in AI visibility within 90 days.';
+  } else if (instruction === 'citations') {
+    c += '\n\n*[Refined: structured for AI citation patterns — headings clarified, factual claims made explicit, list format optimised for retrieval]*';
+  } else if (instruction === 'beginner') {
+    c += '\n\n*[Refined: language simplified for beginner audience — jargon replaced with plain-language explanations]*';
+  } else {
+    c += '\n\n*[Auto-refined: "' + instruction + '"]*';
+  }
+  ta.value = c;
+  deduct(1);
+  setStep(3);
+  showToast('Content refined');
+}
+
+(function init() {
+  document.getElementById('btn-generate').addEventListener('click', doGenerate);
+  document.getElementById('btn-regenerate').addEventListener('click', doGenerate);
+
+  document.getElementById('btn-copy').addEventListener('click', function() {
+    var ta = document.getElementById('content-textarea');
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(ta.value).then(function(){ showToast('Copied!'); });
+    } else {
+      ta.select();
+      document.execCommand('copy');
+      showToast('Copied!');
+    }
+  });
+
+  document.getElementById('btn-approve').addEventListener('click', function() {
+    var ta = document.getElementById('content-textarea');
+    var sel = getSelections();
+    var raw = ta.value;
+    var firstLine = raw.split('\n').find(function(l){ return l.trim(); }) || '';
+    var title = firstLine.replace(/^#+\s*/, '').trim() || 'Untitled';
+    var previewLines = raw.replace(/#+\s*/g,'').replace(/\*+/g,'').split('\n').filter(function(l){ return l.trim(); });
+    var preview = previewLines.slice(1,5).join(' ').slice(0, 200);
+    library.push({ title: title, format: sel.format, category: sel.category, market: sel.market, persona: sel.persona, llm: sel.llm, language: sel.language, preview: preview, body: raw, date: '4 May 2026', status: 'approved' });
+    document.getElementById('approval-bar').classList.add('hidden');
+    document.getElementById('approved-badge').classList.add('visible');
+    document.getElementById('changes-bar').classList.remove('visible');
+    document.getElementById('refine-pills').classList.add('hidden');
+    document.getElementById('textarea-footer').classList.add('hidden');
+    ta.setAttribute('readonly', true);
+    isApproved = true;
+    setStep(4);
+    renderMiniLib();
+    showToast('Saved to library');
+  });
+
+  document.getElementById('btn-request-changes').addEventListener('click', function() {
+    document.getElementById('approval-bar').classList.add('hidden');
+    document.getElementById('changes-bar').classList.add('visible');
+    document.getElementById('content-textarea').removeAttribute('readonly');
+  });
+
+  document.getElementById('btn-resubmit').addEventListener('click', function() {
+    document.getElementById('changes-bar').classList.remove('visible');
+    document.getElementById('approval-bar').classList.remove('hidden');
+    setStep(3);
+  });
+
+  document.querySelectorAll('.refine-pill').forEach(function(btn) {
+    btn.addEventListener('click', function(){ applyRefine(btn.dataset.refine); });
+  });
+
+  document.getElementById('btn-auto-refine').addEventListener('click', function() {
+    var inp = document.getElementById('refine-input');
+    var val = inp.value.trim();
+    if (!val) return;
+    applyRefine(val);
+    inp.value = '';
+  });
+
+  document.getElementById('refine-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      var val = e.target.value.trim();
+      if (!val) return;
+      applyRefine(val);
+      e.target.value = '';
+    }
+  });
+
+  document.getElementById('btn-view-all').addEventListener('click', function(){ goPage('library'); });
+  document.getElementById('btn-back').addEventListener('click', function(){ goPage('create'); });
+  document.getElementById('tab-insights').addEventListener('click', function(){ showToast('Insights — coming soon'); });
+  document.getElementById('tab-create').addEventListener('click', function(){ goPage('create'); });
+  document.getElementById('lib-tab-insights').addEventListener('click', function(){ showToast('Insights — coming soon'); });
+
+  document.getElementById('filter-pills').addEventListener('click', function(e) {
+    if (e.target.classList.contains('filter-pill')) renderLibGrid(e.target.dataset.filter);
+  });
+
+  document.getElementById('viewer-close').addEventListener('click', closeViewer);
+  document.getElementById('viewer-backdrop').addEventListener('click', closeViewer);
+})();
+</script>
+</body>
+</html>
