@@ -12,7 +12,7 @@
 
 The **Create Content** feature enables brand users to generate AI-optimised content (blog posts, listicles, comparison articles, etc.) that improves their visibility in AI search model responses (ChatGPT, Gemini, Perplexity, Claude, Google AI).
 
-The workflow guides users through five steps: configure inputs → analyse high-priority prompts → review source citations → generate content → approve and publish. The output is saved to a shared Content Library.
+The workflow is a 6-step modal launched from the Content Library: configure targeting → select format → configure brand resources → analyse prompts → review citations → generate and approve content. Generated content is saved to the Content Library.
 
 ---
 
@@ -20,16 +20,16 @@ The workflow guides users through five steps: configure inputs → analyse high-
 
 | ID | As a… | I want to… | So that… |
 |---|---|---|---|
-| US-01 | Brand manager | Configure content format, target market, persona, and LLMs | The generated content is tailored to my audience |
+| US-01 | Brand manager | Configure targeting (category, market, persona, LLM) and content format before generating | The generated content is tailored to my audience and channel |
 | US-02 | Brand manager | See which AI search prompts have the largest visibility gap | I can prioritise the prompts most worth targeting |
 | US-03 | Brand manager | Select specific prompts to target | I can focus content on the highest-opportunity gaps |
 | US-04 | Brand manager | See which sources are cited for those prompts across LLMs | I understand what content my competitors publish that I lack |
-| US-05 | Brand manager | Select specific citations to include | I can control which competitive signals inform my content |
+| US-05 | Brand manager | Select up to 5 citations to include | I can control which competitive signals inform my content |
 | US-06 | Brand manager | Generate a draft article from the selected citations | I get a ready-to-edit starting point grounded in citation data |
 | US-07 | Brand manager | Refine the generated content | I can adjust tone, length, and structure without regenerating |
 | US-08 | Brand manager | Approve content and save it to the library | My team can review and track all generated pieces |
 | US-09 | Brand manager | Publish an approved article | I can record that a piece has gone live |
-| US-10 | Brand manager | View all saved content in a library | I have a record of what has been created and its status |
+| US-10 | Brand manager | View all saved content in a library table | I have a record of what has been created and its status |
 
 ---
 
@@ -37,203 +37,192 @@ The workflow guides users through five steps: configure inputs → analyse high-
 
 The feature lives within the PP Portal under **AI Commerce Visibility**. The persistent shell contains:
 
-- **Topbar** (always visible): PP logomark, product name, AI-generated beta badge, live credit balance, user avatar
-- **Nav tabs**: Insights | Create content (default active) | Content library
+- **Topbar** (always visible): PP logomark, product name, AI-generated beta badge, user avatar
+- **Nav tabs**: Insights | Content library (default active)
 
-Switching tabs shows/hides the relevant section without a full page reload.
+There is no "Create content" nav tab. The entry point to content generation is the **"+ Generate content"** primary button in the Content Library header.
 
 ---
 
 ## 4. Feature Requirements
 
-### 4.1 Create Content — Left Panel (Configuration)
+### 4.1 Content Library (Main View)
 
-**Content inputs card** — users configure the following before generating:
+The default view on page load. Displays all saved articles in a **table layout**.
+
+**Header:**
+- "Content library" title with article count
+- "**+ Generate content**" primary CTA — opens the Generate modal
+
+**Filter pills:** All | Approved | Published
+
+**Table columns:** Title (with category/market tags below) | Format | Language | LLMs | Status | Date
+
+**Row behaviour:**
+- Clicking anywhere on a row opens the Article Detail view
+- No separate "Open" button on rows
+- Rows show pointer cursor on hover
+
+---
+
+### 4.2 Generate Content Modal (6-Step Workflow)
+
+A centred modal (max-width 1040px, height 80vh) with a persistent step indicator bar.
+
+**Step order:** Targeting → Format → Brand → Prompts → Citations → Review
+
+Completed steps show a green checkmark. Current step is highlighted coral.
+
+---
+
+#### Step 1 — Targeting
+
+Multi-search selector fields for:
 
 | Field | Type | Options |
 |---|---|---|
-| Content format | Single select | Blog post, Listicle, Comparison article, Social post, Email, Product description |
-| Product category | Single select | Running Shoes, Coffee Pods, Sportswear, Outdoor Gear |
-| Market | Single select | United States, Germany, France, United Kingdom, Netherlands |
-| Persona | Single select | Marathon Trainer, Casual Runner, Performance Athlete, Beginner Runner |
-| Target LLM | Multi-select toggle | ChatGPT (35%), Gemini (20%), Claude (20%), Perplexity (15%), Google AI (10%) |
-| Language | Single select | English, German, French, Spanish, Dutch, Italian |
-| Brand kit | Single select + upload | Existing brand kits OR upload new (PDF/ZIP/DOCX, max 20 MB) |
-| Knowledge base | Single select + upload | Existing knowledge bases OR upload new (PDF/CSV/TXT, max 50 MB) |
+| Product category | Multi-select | Running Shoes, Coffee Pods, Sportswear, Outdoor Gear |
+| Market | Multi-select | United States, Germany, France, United Kingdom, Netherlands |
+| Persona | Multi-select | Marathon Trainer, Casual Runner, Performance Athlete, Beginner Runner |
+| Target LLM | Multi-select | ChatGPT (35%), Gemini (20%), Claude (20%), Perplexity (15%), Google AI (10%) |
 
-**Target LLM behaviour:**
-- Displayed as toggle pills, not a dropdown
-- All 5 models active by default; "All models" pill syncs state
-- Toggling "All models" activates or deactivates all 5 at once
-- "All models" pill auto-activates when all 5 are individually on; deactivates when any is off
-- Each LLM pill uses its brand colour when active
-
-**Upload behaviour:**
-- Selecting "+ Upload new" in Brand kit or Knowledge base reveals a dashed dropzone inline
-- Dropzone supports drag-and-drop or click-to-browse
-- File type and size constraints are validated; accepted files show a success confirmation state
-
-**Action:**
-- "Analyse prompts" primary CTA — triggers the prompt analysis step
-- Credits cost and current balance displayed below the fields
+**Footer:** "Next →" (disabled until at least one product category is selected)
 
 ---
 
-**Content library mini card** — shows the 3 most recent approved/published items (title, format, category, status badge). "View all" navigates to the Content Library tab.
+#### Step 2 — Format
+
+Single-select native `<select>` fields for:
+
+| Field | Options |
+|---|---|
+| Content format | Blog post, Listicle, Comparison article, Social post, Email, Product description |
+| Language | English, German, French, Spanish, Dutch, Italian |
+
+No pills shown after selection. Format and language are optional at this step.
+
+**Footer:** "Next →" (always enabled)
 
 ---
 
-### 4.2 Create Content — Right Panel (5-Step Workflow)
+#### Step 3 — Brand
 
-A persistent step indicator bar shows: Configure → Select prompts → Citations → Generate → Approve. The current step is highlighted coral; completed steps show a green checkmark.
+Multi-search selector fields for:
 
-A loading bar below the indicator animates during content generation.
+| Field | Options |
+|---|---|
+| Brand kit | Nespresso Brand Kit v2.1, Zalora Brand Kit 2025, iHerb Brand Guidelines, Decathlon Style Guide |
+| Knowledge base | Product catalog 2025, Marketing materials Q4, Custom URL set, PIM export — all SKUs |
+
+No upload option. Selection only.
+
+**Footer:** "Next →" (always enabled)
 
 ---
 
-#### Step 1 — Configure
+#### Step 4 — Prompts
 
-Right panel shows a placeholder instructing the user to fill in the left panel and click "Analyse prompts".
+Triggered when the user clicks "Next" from Brand. A brief loading animation ("Analysing prompts…") runs for ~0.8 seconds, then the prompt list renders.
 
----
-
-#### Step 2 — Select Prompts
-
-Triggered when the user clicks "Analyse prompts".
-
-Displays a ranked list of AI search prompts for the selected category, sorted by visibility gap (largest first).
+Displays a ranked list of AI search prompts for the selected categories, sorted by visibility gap (largest first).
 
 **Each row shows:**
 - Checkbox (multi-select)
 - Prompt text
-- Two mini horizontal bar charts: user's current visibility % vs competitive average % (to-scale, max ~70%)
-- Gap badge (−Xpp) colour-coded by severity:
-  - ≥30pp gap: red
-  - 15–29pp gap: amber
-  - <15pp gap: green
+- Two mini horizontal bar charts: user's current visibility % vs competitive average %
+- Gap badge (−Xpp) colour-coded: ≥30pp red · 15–29pp amber · <15pp green
 
-**Header controls:**
-- "Select all / Deselect all" toggle
+**Header controls:** Select all / Deselect all
 
 **Footer:**
 - Count of selected prompts
 - "View citations →" CTA (disabled until ≥1 prompt selected)
 
-**Visibility data** comes from the prompt visibility dataset keyed by category. Each prompt record contains: prompt text, user visibility %, competitive average %.
-
 ---
 
-#### Step 3 — Citations
+#### Step 5 — Citations
 
 Triggered when the user clicks "View citations".
 
-**Opportunity banner** at the top: "Your brand appears in X of Y citations across N prompts. [Category-specific gap description.]"
+**Opportunity banner** at top: "Your brand appears in X of Y citations across N prompts."
 
 **Citation groups** — one accordion per selected prompt, all expanded by default:
-- Group header: prompt text, "X/Y selected" count, total citation count, collapse chevron
-- Collapsible body: list of citation items
-
-**Each citation item shows:**
-- Checkbox (pre-selected by default)
-- Source domain with favicon-style letter avatar
-- LLM badges indicating which models cited this source
-- Excerpt snippet from the cited content
-- "Your brand not cited" flag where applicable
+- Group header: prompt text, "X/Y selected" count, collapse chevron
+- Each citation item: checkbox, source domain with letter avatar, LLM badges, excerpt snippet, "Your brand not cited" flag where applicable
 
 **Selection behaviour:**
-- All citations pre-selected when the view loads
-- Clicking a row or its checkbox toggles it
-- Group header count updates live
-- Footer count updates live
+- First 5 citations pre-selected when the view loads
+- **Maximum 5 citations** can be selected at any time — attempting to select a 6th shows a toast
+- "Deselect all" button clears selection
 
 **Footer:**
-- "← Back to prompts" text button
-- "X of Y citations selected" count
-- "Select all / Deselect all" toggle
-- "Generate from selected →" CTA (disabled at 0 selected)
+- "← Back" button
+- "X / 5 citations selected" count
+- "Deselect all" button
+- "Generate content →" CTA (disabled at 0 selected)
 
 ---
 
-#### Step 4 — Generate
+#### Step 6 — Review
 
-Triggered by "Generate from selected" in the Citations step or "Regenerate" in the output view.
+Triggered by "Generate content". A loading animation ("Generating content…") runs for ~1.2 seconds, then the review view renders. **2 credits are deducted** and a toast confirms ("2 credits used").
 
-**Generation behaviour:**
-1. A 1.8-second simulated loading animation plays on the loading bar
-2. 2 credits are deducted
-3. Content is assembled:
-   - If citations are selected: prepend a "## Competitive citation analysis" section describing the citation gaps identified, then append the article body template
-   - If no citations selected: use the article body template directly
-4. Template is selected by format + category. If no exact match, use a generic fallback.
-5. The textarea is rendered editable, the approval bar is shown
+**3-column layout:**
 
-**Output area contains:**
-- Meta tags row: format, category, market, persona, selected LLMs, language
-- Copy button
-- Regenerate button (2 credits)
-- Editable content textarea
-- Quick-refine pills: More concise | More technical | Stronger CTA | Optimise for AI citations | Beginner-friendly (each costs 1 credit; appends a transformation note to the content)
-- Custom refine input + "Auto-refine (1C)" button (freetext instruction; costs 1 credit)
-- Approval action bar (green): "Content is ready." + "Request changes" + "Approve & save"
+| Column | Width | Contents |
+|---|---|---|
+| Brief | 220px | AI-generated strategy brief explaining citation gaps and content approach |
+| Content | flex (fills remaining space) | Editable textarea with generated article + refine controls |
+| Inputs | 196px | Read-only metadata summary of all configured inputs |
 
-**Request changes flow:**
-- Hides the approval bar, shows an amber "Changes requested" bar with a "Re-submit" button
-- Textarea remains editable
-- Re-submit restores the approval bar
+**Content column contains:**
+- Editable textarea (min-height 300px)
+- Quick-refine pills: More concise · More technical · Stronger CTA · Optimise for AI citations (each costs 1 credit; toast confirms usage)
+- Custom refine input + "Refine" button (costs 1 credit)
+
+**Inputs column (read-only metadata):**
+- Format, Language, Categories, Markets, Personas, LLMs, Brand kit, Knowledge base, Prompts (count), Citations (count)
+- Displayed as labelled metadata rows — not interactive
+
+**Footer:** "Approve & save" CTA
 
 ---
 
-#### Step 5 — Approve
+#### Approve & Save
 
-Triggered by "Approve & save".
-
+Triggered by "Approve & save":
 - Saves the article to the Content Library with status: `approved`
-- Hides the approval bar, shows "Approved and saved to library" green confirmation
-- Textarea becomes read-only
-- Refine controls are hidden
-- Mini library on the left panel refreshes
+- Modal closes
+- Library table refreshes
+- Toast: "Content saved to library."
 
-**Article record fields:** title (extracted from first heading), format, category, market, persona, selected LLMs, language, preview (first 200 chars of body text), full body, date, status
-
----
-
-### 4.3 Content Library Tab
-
-**Header:**
-- "Content library" title
-- Article count: "N items · M approved · P published"
-- Filter pills: All | Blog post | Listicle | Comparison article (more formats can be added)
-
-**Grid:** 3-column responsive card grid.
-
-**Each card shows:**
-- Title
-- Approved / Published status badge
-- Format, category, LLM, language tags
-- 3-line preview excerpt
-- Saved date
-- "View & publish →" (approved) or "View →" (published) footer hint
-
-Clicking a card opens the article viewer.
+**Article record fields:** title (extracted from first heading), format, categories, markets, personas, LLMs, language, brief, full body, date, status, versions[]
 
 ---
 
-### 4.4 Article Viewer
+### 4.3 Article Detail View
 
-Right-anchored slide-in panel (760px wide, full-height overlay with translucent backdrop).
+Opened by clicking any row in the Content Library table.
 
-Opens/closes with a smooth slide animation. Clicking the backdrop or the ✕ button closes it.
+**Header:** Back link, article title, status badge, "Mark as published" or "✓ Published" indicator, "Edit content" button
 
-**Header:** article title, meta tags (format, category, market, LLM, language), ✕ close button.
+**3-column layout (matches Review page):**
 
-**Subheader — status and publish action:**
-- Current status badge
-- If `approved`: "Mark as published" button — updates status to `published` across the library grid and mini library card
-- If `published`: "✓ Published" indicator
+| Column | Width | Contents |
+|---|---|---|
+| Brief | 220px | Article strategy brief |
+| Content | flex | Rendered article (markdown) or editable textarea in edit mode + refine controls |
+| Right panel | 220px | Inputs summary (read-only metadata) + Version history |
 
-**Body:** full article rendered from markdown (h1, h2, bold, italic, bullet/numbered lists, tables).
+**Edit mode** (toggled by "Edit content"):
+- Textarea replaces rendered content
+- Refine pills and custom refine input appear
+- "Save as new version" CTA saves edit as a new version entry
 
-**Footer:** "Saved [date] · [format] · [market]"
+**Version history** (in right panel):
+- Lists all versions in reverse chronological order
+- Each entry: version number, date, note, "Restore" button (non-current versions)
+- Restoring creates a new version entry
 
 ---
 
@@ -241,10 +230,10 @@ Opens/closes with a smooth slide animation. Clicking the backdrop or the ✕ but
 
 | Status | Meaning | Badge colour |
 |---|---|---|
-| Approved | Reviewed and saved; not yet live | Green: `#E1F5EE` / `#085041` / `#5DCAA5` |
-| Published | Manually marked as live | Blue: `#EBF3FF` / `#0052CC` / `#B3D4FF` |
+| Approved | Reviewed and saved; not yet live | Green: `#E1F5EE` / `#085041` |
+| Published | Manually marked as live | Blue: `#EBF3FF` / `#0052CC` |
 
-Status transitions: draft (in textarea) → approved (on "Approve & save") → published (on "Mark as published"). There is no automated publishing.
+Status transitions: generated (in textarea) → approved (on "Approve & save") → published (on "Mark as published"). No automated publishing.
 
 ---
 
@@ -253,11 +242,10 @@ Status transitions: draft (in textarea) → approved (on "Approve & save") → p
 | Action | Cost |
 |---|---|
 | Generate content | 2 credits |
-| Regenerate | 2 credits |
 | Quick-refine pill | 1 credit |
-| Auto-refine (custom instruction) | 1 credit |
+| Custom refine | 1 credit |
 
-Credits are deducted immediately on action. The balance is displayed in three places: topbar pill, left panel balance display. Starting balance for the prototype: 124 credits.
+Credits are deducted immediately on action. A **toast notification** is the only feedback ("X credit(s) used"). Credit balance and cost labels are **not** shown in the UI — no balance display in topbar, buttons, or pills.
 
 ---
 
@@ -271,17 +259,38 @@ Credits are deducted immediately on action. The balance is displayed in three pl
 | Perplexity | `#F0EFFE` | `#4B2DB3` | `#B5A3F0` |
 | Google AI | `#FEF0F0` | `#B31A1A` | `#F0A3A3` |
 
-These colours are used consistently in the LLM multi-select pills and the LLM badges shown on citations.
+Used in LLM multi-select pills and LLM badges shown on citations.
 
 ---
 
-## 8. Out of Scope (for this release)
+## 8. Key Component Patterns
+
+### Multi-search selector
+Reusable component used across all multi-select fields (categories, markets, personas, LLMs, brand kit, knowledge base). Supports:
+- Tag pills for selected values (removable with ×)
+- Filterable dropdown on focus
+- Single-select or multi-select mode
+- `onChange` callback for live state sync
+
+### Native `<select>` for single-select
+Used for Content format and Language. Styled with CSS chevron. No pills shown after selection — avoids implying multi-select.
+
+### Toast notifications
+Used for: credit usage, save confirmation, validation errors, insufficient credits. Auto-dismiss after ~2.2 seconds.
+
+### Version history model
+Each article has a `versions[]` array: `[{v, date, note, body}]`. New versions are appended (never mutated). Restoring a version creates a new version entry.
+
+---
+
+## 9. Out of Scope (for this release)
 
 - Real AI content generation (backend LLM call)
 - Real visibility data API
 - Real citations retrieval
 - User authentication / multi-user accounts
-- Actual file processing for brand kit / knowledge base uploads
+- File upload for brand kit / knowledge base
 - Scheduling or automated publishing
 - Editing published content
 - Deletion of library items
+- Credit balance display
