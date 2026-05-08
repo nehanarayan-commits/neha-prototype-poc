@@ -4,7 +4,7 @@
 **Feature ref:** VX-04  
 **Status:** Prototype complete  
 **Author:** Neha Narayan  
-**Last updated:** 8 May 2026
+**Last updated:** 8 May 2026 (rev 2)
 
 ---
 
@@ -38,7 +38,8 @@ The workflow is a 6-step modal launched from the Content Library: configure cont
 The feature lives within the PP Portal under **AI Commerce Visibility**. The persistent shell contains:
 
 - **Topbar** (always visible): PP logomark, product name "AI Commerce Visibility | Content", AI-generated beta badge, user avatar
-- **No nav tabs** — Content library is the only view; no Insights tab
+- **Left nav** (always visible): 64px dark navy sidebar with icon tiles for each PP experience — AI Visibility (active, highlighted coral `#BD164B`), Decision Intel, Post-Purchase, Checkout, Returns, Logistics. Hovering a tile shows a full-name tooltip.
+- **Nav tab** (below topbar): "Content library" — the only tab in this view
 
 There is no "Create content" nav tab. The entry point to content generation is the **"+ Generate content"** primary button in the Content Library header.
 
@@ -220,13 +221,13 @@ Opened by clicking any row in the Content Library table.
 **Edit mode** (toggled by "Edit content"):
 - Textarea replaces rendered content
 - **Edit / Preview toggle** appears — switches between textarea and rendered markdown preview
-- Refine pills and custom refine input appear
-- "Save" button in the header saves the edit as a new version and reverts status to Draft
+- Refine pills and custom refine input appear — these update the textarea in place only, **no version is created**
+- "Save" button in the header is the **only action that creates a new version**; saves edit and reverts status to Draft
 
 **Version history** (in right panel):
 - Lists all versions in reverse chronological order
-- Each entry: version number, date, note, **email of the user who made the change**, "Restore" button (non-current versions)
-- Restoring creates a new version entry
+- Each entry: version label (e.g. v1.2), date, note, **email of the user who made the change**, "Restore" button (non-current versions)
+- Restoring creates a new version entry using the same versioning logic
 
 ---
 
@@ -261,8 +262,8 @@ Opened by clicking any row in the Content Library table.
 
 Credits are deducted immediately on action. A **toast notification** is the only feedback:
 - Generation: "50 credits used" (standard dark toast, bottom-right)
-- Refine: "Content refined · 10 credits used" (green success toast, top-centre)
-- Save + refine in detail view: "Content refined and saved · 10 credits used" (green success toast, top-centre)
+- Refine (modal or detail): "Content refined · 10 credits used" (green success toast, top-centre)
+- Save version (detail): "New version saved." (green success toast, top-centre)
 
 Credit balance and cost labels are **not** shown in the UI — no balance display in topbar, buttons, or pills.
 
@@ -304,7 +305,18 @@ Used in both the modal Review step and the Article Detail edit mode. A two-butto
 Auto-dismiss after ~2.2 seconds.
 
 ### Version history model
-Each article has a `versions[]` array: `[{v, date, note, email, body}]`. New versions are appended (never mutated). Restoring a version creates a new version entry. Each version records the **email** of the user who created it.
+Each article has a `versions[]` array: `[{v, date, note, email, body}]`. New versions are appended (never mutated). Each version records the **email** of the user who created it.
+
+**Version label format:** `{major}.{minor}` — e.g. `1.1`, `1.2`, `2.1`
+
+| Scenario | Behaviour |
+|---|---|
+| Save while article is Draft | Minor increments: 1.1 → 1.2 → 1.3 |
+| Save after article was Approved or Published | Major increments, minor resets: 1.3 → 2.1 → 2.2 |
+| Restore a version | Same major/minor logic as Save (based on current status at time of restore) |
+| Refine (pill or custom) | Updates textarea in place only — **no version created** |
+
+New articles start at `1.1`. The article object tracks `_majorV` and `_minorV` counters internally.
 
 ---
 

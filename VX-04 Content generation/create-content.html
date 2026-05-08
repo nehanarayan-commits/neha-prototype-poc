@@ -49,6 +49,33 @@ body{
   display:flex;align-items:center;justify-content:center;
   color:#fff;font-size:12px;font-weight:600;cursor:pointer;
 }
+/* LEFT NAV */
+.left-nav{
+  width:64px;flex-shrink:0;background:var(--dark-navy);
+  display:flex;flex-direction:column;align-items:center;
+  padding:12px 0;gap:4px;z-index:10;
+}
+.nav-tile{
+  width:48px;height:48px;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;transition:background 0.15s;color:rgba(255,255,255,0.5);
+  position:relative;
+}
+.nav-tile:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.85)}
+.nav-tile--active{background:#BD164B;color:#fff}
+.nav-tile--active:hover{background:#BD164B}
+.nav-tile svg{flex-shrink:0}
+.nav-tile-label{font-size:8px;font-weight:600;text-align:center;line-height:1.2;letter-spacing:0.2px;max-width:44px}
+.nav-divider{width:32px;height:1px;background:rgba(255,255,255,0.12);margin:4px 0;flex-shrink:0}
+.nav-tile-tooltip{
+  position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);
+  background:rgba(0,0,0,0.8);color:#fff;font-size:11px;font-weight:500;
+  padding:4px 8px;border-radius:4px;white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity 0.15s;z-index:200;
+}
+.nav-tile:hover .nav-tile-tooltip{opacity:1}
+/* BODY WRAPPER */
+.body-wrap{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
 /* NAV TABS */
 .nav-tabs{
   background:var(--color-background-primary);
@@ -63,6 +90,7 @@ body{
 .nav-tab:hover{color:var(--color-text-primary)}
 .nav-tab.active{color:var(--coral);border-bottom-color:var(--coral)}
 /* MAIN CONTENT AREA */
+.content-area{flex:1;display:flex;overflow:hidden}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 /* VIEW CONTAINERS */
 .view{display:none;flex:1;flex-direction:column;overflow:hidden}
@@ -481,6 +509,53 @@ body{
   <div class="topbar-avatar" title="Jane Doe">JD</div>
 </div>
 
+<!-- SHELL ROW: LEFT NAV + BODY -->
+<div class="content-area">
+
+<!-- LEFT NAV -->
+<nav class="left-nav">
+  <!-- AI Commerce Visibility (active) -->
+  <div class="nav-tile nav-tile--active">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="4" fill="currentColor" opacity="0.9"/><path d="M11 3C6.58 3 3 6.58 3 11s3.58 8 8 8 8-3.58 8-8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M16 6l2-2M18 6l-2-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="18" cy="4" r="2" fill="currentColor"/></svg>
+    <span class="nav-tile-label">AI Visibility</span>
+    <span class="nav-tile-tooltip">AI Commerce Visibility</span>
+  </div>
+  <!-- AI Decision Intelligence -->
+  <div class="nav-tile">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="12" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="12" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M12 15.5h7M15.5 12v7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span class="nav-tile-label">Decision Intel</span>
+    <span class="nav-tile-tooltip">AI Decision Intelligence</span>
+  </div>
+  <div class="nav-divider"></div>
+  <!-- Post-Purchase -->
+  <div class="nav-tile">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 4h2l2.5 9h8l2-6H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="17.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="17.5" r="1.5" fill="currentColor"/></svg>
+    <span class="nav-tile-label">Post-Purchase</span>
+    <span class="nav-tile-tooltip">Post-Purchase</span>
+  </div>
+  <!-- Checkout -->
+  <div class="nav-tile">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="6" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M3 10h16" stroke="currentColor" stroke-width="1.5"/><path d="M7 6V5a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span class="nav-tile-label">Checkout</span>
+    <span class="nav-tile-tooltip">Checkout</span>
+  </div>
+  <!-- Returns -->
+  <div class="nav-tile">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 9H14a5 5 0 010 10H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 5l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="nav-tile-label">Returns</span>
+    <span class="nav-tile-tooltip">Returns</span>
+  </div>
+  <!-- Logistics -->
+  <div class="nav-tile">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="9" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M15 12h3l2 3v3h-5v-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="6" cy="19" r="1.5" fill="currentColor"/><circle cx="17" cy="19" r="1.5" fill="currentColor"/><path d="M2 9V7a2 2 0 012-2h9a2 2 0 012 2v2" stroke="currentColor" stroke-width="1.5"/></svg>
+    <span class="nav-tile-label">Logistics</span>
+    <span class="nav-tile-tooltip">Logistics</span>
+  </div>
+</nav>
+
+<!-- BODY: tabs + main -->
+<div class="body-wrap">
+
 <!-- NAV TABS -->
 <div class="nav-tabs">
   <div class="nav-tab active" data-tab="library">Content library</div>
@@ -559,7 +634,9 @@ body{
       </div>
     </div>
   </div>
-</div>
+</div><!-- /.main -->
+</div><!-- /.body-wrap -->
+</div><!-- /.content-area -->
 
 <!-- GENERATE MODAL -->
 <div class="modal-backdrop" id="modal-backdrop">
@@ -603,10 +680,11 @@ var library = [
     language: 'English',
     status: 'approved',
     date: '6 May 2026',
+    _majorV: 1, _minorV: 3,
     versions: [
-      {v:1, date:'4 May 2026', note:'Initial generation', email:'sarah.chen@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nWhen AI models answer queries about marathon shoes, a handful of performance attributes dominate every recommendation: cushioning stack height, heel-to-toe drop, carbon plate technology, and long-run durability.\n\n## What AI citations prioritise\n\nAnalysis of 2,400 AI-generated responses across ChatGPT, Perplexity, and Gemini shows that factual, spec-driven content earns citations at 3.2× the rate of opinion-based editorial. Brands that structure content around measurable claims — “38mm stack height”, “4mm drop”, “300-mile outsole durability” — consistently outrank competitors in AI-generated shortlists.\n\n## Key features to evaluate\n\n**Stack height** determines long-run cushioning. Models recommend 36–40mm for marathon distances, citing reduced fatigue after the 30km mark.\n\n**Heel-to-toe drop** affects strike pattern. A 4–6mm drop suits mid-foot strikers; zero drop requires a 12-week adaptation period that AI models frequently flag as an injury risk.\n\n**Carbon plate** options from Adidas Running and Nike Running dominate AI citation counts in the performance tier.\n\n**Durability** claims backed by kilometre data outperform subjective descriptors. “450km outsole lifespan on asphalt” converts better than “long-lasting build quality.”\n\n## Building content AI models cite\n\nStructure content with clear ## headings, explicit numeric claims, and comparison context. AI models reward content that helps users make decisions — not content that simply promotes a product.'},
-      {v:2, date:'5 May 2026', note:'Refined: more concise', email:'sarah.chen@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nAI models prioritise four attributes in marathon shoe recommendations: cushioning stack height, heel-to-toe drop, carbon plate technology, and durability data.\n\n## What earns AI citations\n\nSpec-driven content earns citations at 3.2× the rate of opinion-based editorial. Structure content around measurable claims: “38mm stack height”, “4mm drop”, “300-mile outsole durability”.\n\n## Key attributes\n\n**Stack height** (36–40mm) reduces fatigue after the 30km mark. **Heel-to-toe drop** (4–6mm) suits mid-foot strikers. **Carbon plate** options from Adidas and Nike dominate AI shortlists. **Durability** claims backed by kilometre data outperform subjective descriptors.\n\n## How to structure content\n\nUse clear ## headings, explicit numeric claims, and comparison context. AI models reward decision-helping content over promotional copy.'},
-      {v:3, date:'6 May 2026', note:'Refined: stronger CTA', email:'james.liu@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nAI models prioritise four attributes in marathon shoe recommendations: cushioning stack height, heel-to-toe drop, carbon plate technology, and durability data.\n\n## What earns AI citations\n\nSpec-driven content earns citations at 3.2× the rate of opinion-based editorial. Structure content around measurable claims: “38mm stack height”, “4mm drop”, “300-mile outsole durability”.\n\n## Key attributes\n\n**Stack height** (36–40mm) reduces fatigue after the 30km mark. **Heel-to-toe drop** (4–6mm) suits mid-foot strikers. **Carbon plate** options from Adidas and Nike dominate AI shortlists. **Durability** claims backed by kilometre data — “450km outsole lifespan on asphalt” — outperform subjective descriptors.\n\n## Start optimising today\n\nPublish structured, spec-rich content now to capture the AI citation gap before competitors do. Every week without optimised content is a week of lost AI visibility. Use clear ## headings, explicit numeric claims, and comparison context to build lasting AI presence.'}
+      {v:'1.1', date:'4 May 2026', note:'Initial generation', email:'sarah.chen@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nWhen AI models answer queries about marathon shoes, a handful of performance attributes dominate every recommendation: cushioning stack height, heel-to-toe drop, carbon plate technology, and long-run durability.\n\n## What AI citations prioritise\n\nAnalysis of 2,400 AI-generated responses across ChatGPT, Perplexity, and Gemini shows that factual, spec-driven content earns citations at 3.2× the rate of opinion-based editorial. Brands that structure content around measurable claims — “38mm stack height”, “4mm drop”, “300-mile outsole durability” — consistently outrank competitors in AI-generated shortlists.\n\n## Key features to evaluate\n\n**Stack height** determines long-run cushioning. Models recommend 36–40mm for marathon distances, citing reduced fatigue after the 30km mark.\n\n**Heel-to-toe drop** affects strike pattern. A 4–6mm drop suits mid-foot strikers; zero drop requires a 12-week adaptation period that AI models frequently flag as an injury risk.\n\n**Carbon plate** options from Adidas Running and Nike Running dominate AI citation counts in the performance tier.\n\n**Durability** claims backed by kilometre data outperform subjective descriptors. “450km outsole lifespan on asphalt” converts better than “long-lasting build quality.”\n\n## Building content AI models cite\n\nStructure content with clear ## headings, explicit numeric claims, and comparison context. AI models reward content that helps users make decisions — not content that simply promotes a product.'},
+      {v:'1.2', date:'5 May 2026', note:'Refined: more concise', email:'sarah.chen@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nAI models prioritise four attributes in marathon shoe recommendations: cushioning stack height, heel-to-toe drop, carbon plate technology, and durability data.\n\n## What earns AI citations\n\nSpec-driven content earns citations at 3.2× the rate of opinion-based editorial. Structure content around measurable claims: “38mm stack height”, “4mm drop”, “300-mile outsole durability”.\n\n## Key attributes\n\n**Stack height** (36–40mm) reduces fatigue after the 30km mark. **Heel-to-toe drop** (4–6mm) suits mid-foot strikers. **Carbon plate** options from Adidas and Nike dominate AI shortlists. **Durability** claims backed by kilometre data outperform subjective descriptors.\n\n## How to structure content\n\nUse clear ## headings, explicit numeric claims, and comparison context. AI models reward decision-helping content over promotional copy.'},
+      {v:'1.3', date:'6 May 2026', note:'Refined: stronger CTA', email:'james.liu@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nAI models prioritise four attributes in marathon shoe recommendations: cushioning stack height, heel-to-toe drop, carbon plate technology, and durability data.\n\n## What earns AI citations\n\nSpec-driven content earns citations at 3.2× the rate of opinion-based editorial. Structure content around measurable claims: “38mm stack height”, “4mm drop”, “300-mile outsole durability”.\n\n## Key attributes\n\n**Stack height** (36–40mm) reduces fatigue after the 30km mark. **Heel-to-toe drop** (4–6mm) suits mid-foot strikers. **Carbon plate** options from Adidas and Nike dominate AI shortlists. **Durability** claims backed by kilometre data — “450km outsole lifespan on asphalt” — outperform subjective descriptors.\n\n## Start optimising today\n\nPublish structured, spec-rich content now to capture the AI citation gap before competitors do. Every week without optimised content is a week of lost AI visibility. Use clear ## headings, explicit numeric claims, and comparison context to build lasting AI presence.'}
     ]
   },
   {
@@ -621,8 +699,9 @@ var library = [
     language: 'English',
     status: 'published',
     date: '3 May 2026',
+    _majorV: 1, _minorV: 1,
     versions: [
-      {v:1, date:'3 May 2026', note:'Initial generation', email:'sarah.chen@nespresso.com', body:'# What AI models recommend when you search for coffee pods\n\nAI models are increasingly the first stop for product research. Understanding what signals drive AI citations is how brands build durable AI visibility.\n\n## How AI evaluates coffee pod content\n\nAcross 1,800 AI-generated coffee pod recommendations, the attributes cited most frequently are: taste profile descriptions, machine compatibility data, sustainability certifications, and price-per-cup transparency.\n\n## Top-cited content attributes\n\n**Taste reviews with specificity** earn citations. “Notes of dark chocolate and dried fruit, medium acidity, intensity 9” outperforms “rich, full-bodied flavour.”\n\n**Machine compatibility** is the most-searched functional attribute. Nespresso Original versus Vertuo distinctions appear in 67% of AI responses.\n\n**Sustainability credentials** matter. Certified compostable pods are cited favourably. Certifications with third-party names drive higher citation rates.\n\n**Price-per-cup** transparency shapes perceived value. Content that states “€0.43 per pod at subscription pricing” performs better than “affordable premium coffee.”\n\n## Building content AI models cite\n\nPublish content that answers the specific questions AI models receive. State intensity ratings, origin data, and machine compatibility in the first 150 words.'}
+      {v:'1.1', date:'3 May 2026', note:'Initial generation', email:'sarah.chen@nespresso.com', body:'# What AI models recommend when you search for coffee pods\n\nAI models are increasingly the first stop for product research. Understanding what signals drive AI citations is how brands build durable AI visibility.\n\n## How AI evaluates coffee pod content\n\nAcross 1,800 AI-generated coffee pod recommendations, the attributes cited most frequently are: taste profile descriptions, machine compatibility data, sustainability certifications, and price-per-cup transparency.\n\n## Top-cited content attributes\n\n**Taste reviews with specificity** earn citations. “Notes of dark chocolate and dried fruit, medium acidity, intensity 9” outperforms “rich, full-bodied flavour.”\n\n**Machine compatibility** is the most-searched functional attribute. Nespresso Original versus Vertuo distinctions appear in 67% of AI responses.\n\n**Sustainability credentials** matter. Certified compostable pods are cited favourably. Certifications with third-party names drive higher citation rates.\n\n**Price-per-cup** transparency shapes perceived value. Content that states “€0.43 per pod at subscription pricing” performs better than “affordable premium coffee.”\n\n## Building content AI models cite\n\nPublish content that answers the specific questions AI models receive. State intensity ratings, origin data, and machine compatibility in the first 150 words.'}
     ]
   }
 ];
@@ -851,7 +930,8 @@ function renderLibrary() {
     var badgeClass = si.cls;
     var statusLabel = si.label;
     var llmList = (article.llms||[]).slice(0,2).map(function(l){return '<span class="meta-tag">'+escapeHtml(l.split(' ')[0])+'</span>'}).join('');
-    var vBadge = article.versions.length > 1 ? '<span style="font-size:11px;color:var(--color-text-tertiary);margin-left:6px">v'+article.versions.length+'</span>' : '';
+    var latestVLabel = article.versions[article.versions.length-1].v;
+    var vBadge = article.versions.length > 1 ? '<span style="font-size:11px;color:var(--color-text-tertiary);margin-left:6px">v'+latestVLabel+'</span>' : '';
     return '<tr data-id="'+article.id+'">' +
       '<td>' +
         '<div class="lib-table-title">'+escapeHtml(article.title)+vBadge+'</div>' +
@@ -883,8 +963,9 @@ function renderLibrary() {
 }
 
 function renderVersionPanel(article) {
+  var latestV = article.versions[article.versions.length-1].v;
   return article.versions.slice().reverse().map(function(ver) {
-    var isLatest = ver.v === article.versions.length;
+    var isLatest = ver.v === latestV;
     return '<div class="version-row">' +
       '<span class="version-num">v'+ver.v+'</span>' +
       '<span class="version-date">'+escapeHtml(ver.date)+'</span>' +
@@ -1006,12 +1087,24 @@ function getTodayStr() {
   return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
 }
 
+function nextVersionLabel(article) {
+  var wasApproved = article.status === 'approved' || article.status === 'published';
+  if (wasApproved) {
+    article._majorV = (article._majorV || 1) + 1;
+    article._minorV = 1;
+  } else {
+    article._majorV = article._majorV || 1;
+    article._minorV = (article._minorV || 0) + 1;
+  }
+  return article._majorV + '.' + article._minorV;
+}
+
 function saveNewVersion(articleId, newBody, note) {
   var article = findArticle(articleId);
   if (!article) return;
-  var newV = article.versions.length + 1;
+  var vLabel = nextVersionLabel(article);
   var today = getTodayStr();
-  article.versions.push({v:newV, date:today, note:note||'Manual edit', email:CURRENT_USER_EMAIL, body:newBody});
+  article.versions.push({v:vLabel, date:today, note:note||'Manual edit', email:CURRENT_USER_EMAIL, body:newBody});
   article.date = today;
   if (article.status !== 'draft') article.status = 'draft';
 }
@@ -1022,9 +1115,9 @@ function restoreVersion(articleId, vNum) {
   var ver = null;
   for(var i=0;i<article.versions.length;i++){if(article.versions[i].v===vNum){ver=article.versions[i];break;}}
   if (!ver) return;
-  var newV = article.versions.length + 1;
+  var vLabel = nextVersionLabel(article);
   var today = getTodayStr();
-  article.versions.push({v:newV, date:today, note:'Restored from v'+vNum, email:CURRENT_USER_EMAIL, body:ver.body});
+  article.versions.push({v:vLabel, date:today, note:'Restored from v'+vNum, email:CURRENT_USER_EMAIL, body:ver.body});
   article.date = today;
 }
 
@@ -1503,7 +1596,8 @@ function approveAndSave() {
     language: lang,
     status: 'draft',
     date: today,
-    versions: [{v:1, date:today, note:'Initial generation', email:CURRENT_USER_EMAIL, body:body}]
+    _majorV: 1, _minorV: 1,
+    versions: [{v:'1.1', date:today, note:'Initial generation', email:CURRENT_USER_EMAIL, body:body}]
   });
   closeModal();
   renderLibrary();
@@ -1580,7 +1674,7 @@ function init() {
     currentDetailVersion = article.versions.length-1;
     isEditing = false;
     renderDetailView(article, currentDetailVersion);
-    showToast('New version saved.');
+    showToast('New version saved.', 'success');
   });
 
   // DETAIL CONTENT CARD ACTIONS
@@ -1591,12 +1685,8 @@ function init() {
       var instruction = refinePill.getAttribute('data-refine');
       var ta = document.getElementById('detail-content-textarea');
       if (!ta) return;
-      var newBody = applyRefineInstruction(ta.value, instruction);
-      saveNewVersion(currentDetailId, newBody, 'Refined: '+instruction);
-      var article = findArticle(currentDetailId);
-      currentDetailVersion = article.versions.length-1;
-      renderDetailView(article, currentDetailVersion);
-      showToast('Content refined and saved · 10 credits used', 'success');
+      ta.value = applyRefineInstruction(ta.value, instruction);
+      showToast('Content refined · 10 credits used', 'success');
       return;
     }
     if (e.target.closest('#btn-detail-refine')) {
@@ -1604,13 +1694,9 @@ function init() {
       if (!input || !input.value.trim()) return;
       if (!spendCredits(10, true)) return;
       var ta = document.getElementById('detail-content-textarea');
-      var newBody = applyRefineInstruction(ta ? ta.value : '', input.value.trim());
-      saveNewVersion(currentDetailId, newBody, 'Refined: '+input.value.trim());
-      var article = findArticle(currentDetailId);
-      currentDetailVersion = article.versions.length-1;
-      renderDetailView(article, currentDetailVersion);
+      if (ta) ta.value = applyRefineInstruction(ta.value, input.value.trim());
       input.value = '';
-      showToast('Content refined and saved · 10 credits used', 'success');
+      showToast('Content refined · 10 credits used', 'success');
     }
 
     // Detail preview/edit toggle (only visible in edit mode)
