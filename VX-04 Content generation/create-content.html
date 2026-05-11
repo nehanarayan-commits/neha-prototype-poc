@@ -102,6 +102,25 @@ body{
 }
 .library-title{font-size:16px;font-weight:500}
 .library-count{font-size:13px;color:var(--color-text-secondary);margin-left:8px}
+.export-menu-wrap{position:relative}
+.export-dropdown{
+  display:none;position:absolute;top:calc(100% + 6px);right:0;
+  background:#fff;border:1px solid var(--color-border-secondary);border-radius:8px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:192px;z-index:300;padding:6px 0;
+}
+.modal-footer .export-dropdown{
+  top:auto;bottom:calc(100% + 6px);
+}
+.export-dropdown.open{display:block}
+.export-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--color-text-tertiary);padding:6px 12px 2px}
+.export-item{
+  display:flex;align-items:center;gap:8px;width:100%;padding:7px 12px;
+  font-size:13px;font-family:inherit;color:var(--color-text-primary);
+  background:none;border:none;cursor:pointer;text-align:left;
+  transition:background 0.1s;
+}
+.export-item:hover{background:var(--color-background-secondary)}
+.export-divider{height:1px;background:var(--color-border-tertiary);margin:4px 0}
 .preview-toggle-group{display:flex;border:1px solid var(--color-border-secondary);border-radius:6px;overflow:hidden}
 .preview-toggle{padding:4px 12px;font-size:12px;font-weight:500;font-family:inherit;border:none;background:#fff;color:var(--color-text-secondary);cursor:pointer;transition:background 0.12s,color 0.12s}
 .preview-toggle.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:600}
@@ -187,6 +206,35 @@ body{
 .badge-draft{background:#F4F5F7;color:#494949}
 .badge-approved{background:#E1F5EE;color:#085041}
 .badge-published{background:#EBF3FF;color:#0052CC}
+.badge-generating{background:#EBF3FF;color:#0052CC}
+/* GENERATION PROGRESS */
+.gen-progress-wrap{max-width:520px;margin:0 auto;padding:8px 0 24px}
+.gen-head{font-size:18px;font-weight:700;color:var(--color-text-primary);margin-bottom:5px}
+.gen-subhead{font-size:13px;color:var(--color-text-secondary);margin-bottom:22px;line-height:1.5}
+.gen-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.gen-bar-track{flex:1;height:6px;background:var(--surface-300);border-radius:3px;overflow:hidden}
+.gen-bar-fill{height:100%;border-radius:3px;background:var(--coral);transition:width 0.7s cubic-bezier(0.4,0,0.2,1);width:0%}
+.gen-bar-pct{font-size:12px;font-weight:700;color:var(--coral);min-width:32px;text-align:right;transition:all 0.3s}
+.gen-step-list{display:flex;flex-direction:column;gap:8px}
+.gen-step{display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:8px;border:1px solid transparent;transition:background 0.3s,border-color 0.3s}
+.gen-step.gs-pending{background:var(--surface-100);border-color:var(--surface-300)}
+.gen-step.gs-active{background:#FFF8F5;border-color:#F4C4AE}
+.gen-step.gs-done{background:#E1F5EE;border-color:#B8DFC0}
+.gen-step-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700;transition:background 0.3s,color 0.3s}
+.gs-pending .gen-step-icon{background:var(--surface-300);color:var(--color-text-tertiary)}
+.gs-active  .gen-step-icon{background:var(--coral);color:#fff}
+.gs-done    .gen-step-icon{background:#1B7837;color:#fff;font-size:12px}
+.gen-step-label{font-size:13px;font-weight:500;transition:color 0.2s}
+.gs-pending .gen-step-label{color:var(--color-text-tertiary)}
+.gs-active  .gen-step-label{color:var(--color-text-primary);font-weight:600}
+.gs-done    .gen-step-label{color:#1B7837}
+.gen-step-sub{font-size:11px;margin-top:2px;display:none}
+.gs-active  .gen-step-sub{display:block;color:var(--coral)}
+.gs-done    .gen-step-sub{display:block;color:#1B7837}
+/* Library generating row */
+.lib-row-gen{opacity:0.75;pointer-events:none;cursor:default}
+.gen-lib-spinner{display:inline-block;width:10px;height:10px;border:2px solid #B3D4FF;border-top-color:#0052CC;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.gen-lib-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;background:#EBF3FF;color:#0052CC}
 /* VERSION HISTORY (inline) */
 .version-history-panel{
   border-top:1px solid var(--color-border-tertiary);
@@ -237,11 +285,38 @@ body{
   color:var(--color-text-tertiary);margin-bottom:10px;
 }
 .brief-text{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.brief-step-wrap{display:flex;flex-direction:column;gap:14px;height:100%}
+.brief-step-subtitle{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-top:4px}
+.brief-step-ta{flex:1;min-height:360px;width:100%}
+.prompt-text{
+  font-size:11.5px;line-height:1.65;color:var(--color-text-secondary);
+  white-space:pre-wrap;word-break:break-word;font-family:'Nunito Sans',sans-serif;
+  margin:0;
+}
+.prompt-col-body{display:flex;flex-direction:column;gap:8px;flex:1}
+.prompt-textarea{
+  width:100%;flex:1;min-height:240px;resize:vertical;
+  font-size:11.5px;line-height:1.65;color:var(--color-text-secondary);
+  font-family:'Nunito Sans',sans-serif;
+  border:1px solid var(--color-border-secondary);border-radius:6px;
+  padding:10px;background:transparent;box-sizing:border-box;
+}
+.prompt-textarea:focus{outline:none;border-color:var(--coral)}
+.btn-regenerate{
+  width:100%;justify-content:center;gap:6px;
+  font-size:12px;font-weight:600;
+  background:#fff;border:1px solid var(--color-border-secondary);
+  color:var(--color-text-primary);border-radius:4px;padding:7px 12px;cursor:pointer;
+  display:flex;align-items:center;transition:background 0.12s,border-color 0.12s;
+}
+.btn-regenerate:hover{background:var(--color-background-secondary);border-color:var(--coral);color:var(--coral)}
+.btn-regenerate:disabled{opacity:0.5;cursor:not-allowed}
+.regen-spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(0,0,0,0.15);border-top-color:var(--coral);border-radius:50%;animation:spin 0.7s linear infinite}
 .article-content{font-size:14px;line-height:1.7;color:var(--color-text-primary)}
 .article-content h1{font-size:20px;font-weight:700;margin-bottom:16px;color:var(--dark-navy)}
 .article-content h2{font-size:16px;font-weight:600;margin:20px 0 10px;color:var(--color-text-primary)}
 .article-content p{margin-bottom:12px}
-.article-content ul{padding-left:20px;margin-bottom:12px}
+.article-content ul,.article-content ol{padding-left:20px;margin-bottom:12px}
 .article-content li{margin-bottom:4px}
 .article-content strong{font-weight:600}
 .article-content em{font-style:italic}
@@ -385,14 +460,21 @@ body{
 }
 .prompt-row.selected .prompt-cb{background:var(--coral);border-color:var(--coral);color:#fff;font-size:10px}
 .prompt-text{flex:1;font-size:13px;color:var(--color-text-primary)}
-.mini-bars{display:flex;flex-direction:column;gap:4px;width:140px;flex-shrink:0}
-.mini-bar-row{display:flex;align-items:center;gap:6px}
-.mini-bar-label{font-size:10px;color:var(--color-text-tertiary);width:28px;text-align:right}
-.mini-bar-track{height:6px;background:var(--color-background-tertiary);border-radius:3px;flex:1;position:relative;overflow:hidden}
-.mini-bar-fill{height:100%;border-radius:3px;position:absolute;top:0;left:0}
-.mini-bar-val{font-size:10px;color:var(--color-text-secondary);width:28px}
+.vis-nums{display:flex;align-items:center;gap:0;width:180px;flex-shrink:0}
+.vis-num-col{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.vis-num-val{font-size:20px;font-weight:800;line-height:1}
+.vis-num-you{color:var(--coral)}
+.vis-num-avg{color:var(--dark-navy)}
+.vis-num-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--color-text-tertiary)}
+.vis-num-divider{width:1px;height:32px;background:var(--color-border-tertiary);flex-shrink:0;margin:0 4px}
+.wow-row{display:flex;align-items:center;justify-content:flex-end;gap:5px;margin-top:2px}
+.wow-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--color-text-tertiary)}
+.wow-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
+.wow-badge--pos{background:#E1F5EE;color:#085041}
+.wow-badge--neg{background:#FCEBEB;color:#791F1F}
+.wow-badge--flat{background:#F4F5F7;color:#494949}
 .gap-badge{
-  padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;flex-shrink:0;
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;flex-shrink:0;white-space:nowrap;
 }
 .gap-red{background:#FCEBEB;color:#791F1F}
 .gap-amber{background:#FAEEDA;color:#633806}
@@ -414,17 +496,11 @@ body{
 .citation-group-chevron{color:var(--color-text-tertiary);flex-shrink:0;transition:transform 0.2s}
 .citation-group.collapsed .citation-group-chevron{transform:rotate(-90deg)}
 .citation-items{padding:0}
-.citation-item{
-  display:flex;align-items:flex-start;gap:10px;padding:10px 14px;
-  border-top:1px solid var(--color-border-tertiary);transition:background 0.15s;cursor:pointer;
-}
-.citation-item:hover{background:var(--color-background-secondary)}
-.citation-item.selected{background:#FFF8F5}
+.citation-item{cursor:pointer}
 .citation-cb{
   width:16px;height:16px;border-radius:4px;border:1.5px solid var(--color-border-secondary);
-  flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
 }
-.citation-item.selected .citation-cb{background:var(--coral);border-color:var(--coral);color:#fff;font-size:10px}
 .favicon-circle{
   width:28px;height:28px;border-radius:50%;background:var(--dark-navy);
   display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;
@@ -433,9 +509,28 @@ body{
 .citation-body{flex:1;min-width:0}
 .citation-domain{font-size:12px;font-weight:600;color:var(--color-text-primary);margin-bottom:3px}
 .citation-snippet{font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:6px}
-.llm-badges{display:flex;gap:4px;flex-wrap:wrap}
+.llm-badges{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
 .llm-badge{padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
-.not-cited-flag{font-size:11px;color:#791F1F;background:#FCEBEB;padding:2px 8px;border-radius:20px;margin-top:4px;display:inline-block}
+/* Citation table */
+.citation-table{width:100%;border-collapse:collapse;font-size:12px}
+.citation-table thead th{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--color-text-tertiary);padding:8px 10px;border-bottom:2px solid var(--color-border-secondary);text-align:left;white-space:nowrap}
+.citation-table thead th.ct-models{text-align:right}
+.citation-table .citation-item td{padding:10px;border-bottom:1px solid var(--color-border-tertiary);vertical-align:middle;background:transparent;transition:background 0.15s}
+.citation-table .citation-item:last-child td{border-bottom:none}
+.citation-table .citation-item:hover td{background:var(--color-background-secondary)}
+.citation-table .citation-item.selected td{background:#FFF8F5}
+.citation-table .citation-item.selected .citation-cb{background:var(--coral);border-color:var(--coral);color:#fff;font-size:10px}
+.ct-check{width:36px}
+.ct-source{width:220px}
+.ct-type{width:130px}
+.ct-cite{width:110px}
+.ct-models{width:110px;text-align:right}
+.source-name{font-size:13px;font-weight:600;color:var(--color-text-primary)}
+.source-domain{font-size:11px;color:var(--color-text-tertiary);margin-top:1px}
+.cite-count-primary{font-size:14px;font-weight:700;color:var(--color-text-primary)}
+.cite-count-sep{font-size:13px;color:var(--color-text-tertiary);margin:0 1px}
+.cite-count-secondary{font-size:13px;color:var(--color-text-tertiary)}
+.source-type{font-size:12px;color:var(--color-text-secondary)}
 /* STEP 6 REVIEW */
 .review-three-col{display:flex;gap:14px;align-items:flex-start}
 .review-col-brief{width:220px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
@@ -445,6 +540,8 @@ body{
   background:var(--color-background-secondary);border:1px solid var(--color-border-tertiary);
   border-radius:8px;padding:14px;overflow:visible;
 }
+.brief-textarea{width:100%;min-height:100px;font-size:13px;color:var(--color-text-secondary);line-height:1.6;border:1px solid var(--color-border-secondary);border-radius:6px;padding:10px;font-family:inherit;resize:vertical;background:transparent;box-sizing:border-box}
+.brief-textarea:focus{outline:none;border-color:var(--coral)}
 .input-summary-row{padding:6px 0;border-bottom:1px solid var(--color-border-tertiary)}
 .input-summary-row:last-child{border-bottom:none}
 .input-summary-label{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--color-text-tertiary);margin-bottom:4px}
@@ -593,13 +690,38 @@ body{
       <div class="detail-title" id="detail-title"></div>
       <div id="detail-status-area" style="display:flex;align-items:center;gap:8px"></div>
       <button class="btn btn-coral btn-sm" id="btn-save-version" style="display:none">Save</button>
+      <div class="export-menu-wrap" id="detail-copy-wrap">
+        <button class="btn btn-outline btn-sm" id="btn-detail-copy">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="3.5" width="7" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3.5 3.5V2.5a1 1 0 011-1h5a1 1 0 011 1v7a1 1 0 01-1 1h-1" stroke="currentColor" stroke-width="1.3"/></svg>
+          Copy
+        </button>
+        <div class="export-dropdown" id="detail-copy-dropdown">
+          <button class="export-item" data-export="copy-md">Copy as Markdown</button>
+          <button class="export-item" data-export="copy-text">Copy as plain text</button>
+        </div>
+      </div>
+      <div class="export-menu-wrap" id="detail-download-wrap">
+        <button class="btn btn-outline btn-sm" id="btn-detail-download">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v7M4 6l2.5 2.5L9 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Download
+        </button>
+        <div class="export-dropdown" id="detail-download-dropdown">
+          <button class="export-item" data-export="download-md">Markdown (.md)</button>
+          <button class="export-item" data-export="download-txt">Plain text (.txt)</button>
+          <button class="export-item" data-export="download-html">HTML (.html)</button>
+        </div>
+      </div>
       <button class="btn btn-outline" id="btn-edit-content">Edit content</button>
     </div>
     <div class="detail-body">
       <div class="detail-col-brief">
-        <div class="card-label">Brief</div>
-        <div class="review-brief-card">
-          <div class="brief-text" id="detail-brief"></div>
+        <div class="card-label">Generation prompt</div>
+        <div class="prompt-col-body">
+          <div class="review-brief-card" style="flex:1;padding:10px">
+            <pre class="prompt-text" id="detail-brief"></pre>
+            <textarea class="prompt-textarea" id="detail-brief-ta" style="display:none;min-height:200px"></textarea>
+          </div>
+          <button class="btn-regenerate" id="detail-btn-regenerate" style="display:none">Regenerate content</button>
         </div>
       </div>
       <div class="detail-col-content" id="detail-content-card">
@@ -660,6 +782,19 @@ body{
 // DATA
 // ============================================================
 var CURRENT_USER_EMAIL = 'jane.doe@nespresso.com';
+
+var GEN_STEPS = [
+  {label:'Reading your citations & brand materials', sub:'Fetching selected sources and knowledge base'},
+  {label:'Identifying key themes & gaps',            sub:'Analysing what competitors cover that you don\'t'},
+  {label:'Matching content to your target prompts',  sub:'Aligning article structure to AI search queries'},
+  {label:'Writing your article draft',               sub:'Generating spec-driven content for AI citation'},
+  {label:'Formatting & finalising',                  sub:'Applying brand tone, markdown structure & metadata'}
+];
+var GEN_STEP_DELAYS    = [3000, 6000, 9000, 12000, 15000];
+var GEN_PROGRESS_PCTS  = [18,   38,   62,   82,    100];
+var GEN_COMPLETE_DELAY = 16500;
+
+var genState = {active:false, step:-1, articleId:null, timers:[], modalOpen:false};
 var credits = 124;
 var activeFilter = 'all';
 var libSearchQuery = '';
@@ -682,9 +817,9 @@ var library = [
     date: '6 May 2026',
     _majorV: 1, _minorV: 3,
     versions: [
-      {v:'1.1', date:'4 May 2026', note:'Initial generation', email:'sarah.chen@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nWhen AI models answer queries about marathon shoes, a handful of performance attributes dominate every recommendation: cushioning stack height, heel-to-toe drop, carbon plate technology, and long-run durability.\n\n## What AI citations prioritise\n\nAnalysis of 2,400 AI-generated responses across ChatGPT, Perplexity, and Gemini shows that factual, spec-driven content earns citations at 3.2× the rate of opinion-based editorial. Brands that structure content around measurable claims — “38mm stack height”, “4mm drop”, “300-mile outsole durability” — consistently outrank competitors in AI-generated shortlists.\n\n## Key features to evaluate\n\n**Stack height** determines long-run cushioning. Models recommend 36–40mm for marathon distances, citing reduced fatigue after the 30km mark.\n\n**Heel-to-toe drop** affects strike pattern. A 4–6mm drop suits mid-foot strikers; zero drop requires a 12-week adaptation period that AI models frequently flag as an injury risk.\n\n**Carbon plate** options from Adidas Running and Nike Running dominate AI citation counts in the performance tier.\n\n**Durability** claims backed by kilometre data outperform subjective descriptors. “450km outsole lifespan on asphalt” converts better than “long-lasting build quality.”\n\n## Building content AI models cite\n\nStructure content with clear ## headings, explicit numeric claims, and comparison context. AI models reward content that helps users make decisions — not content that simply promotes a product.'},
-      {v:'1.2', date:'5 May 2026', note:'Refined: more concise', email:'sarah.chen@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nAI models prioritise four attributes in marathon shoe recommendations: cushioning stack height, heel-to-toe drop, carbon plate technology, and durability data.\n\n## What earns AI citations\n\nSpec-driven content earns citations at 3.2× the rate of opinion-based editorial. Structure content around measurable claims: “38mm stack height”, “4mm drop”, “300-mile outsole durability”.\n\n## Key attributes\n\n**Stack height** (36–40mm) reduces fatigue after the 30km mark. **Heel-to-toe drop** (4–6mm) suits mid-foot strikers. **Carbon plate** options from Adidas and Nike dominate AI shortlists. **Durability** claims backed by kilometre data outperform subjective descriptors.\n\n## How to structure content\n\nUse clear ## headings, explicit numeric claims, and comparison context. AI models reward decision-helping content over promotional copy.'},
-      {v:'1.3', date:'6 May 2026', note:'Refined: stronger CTA', email:'james.liu@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nAI models prioritise four attributes in marathon shoe recommendations: cushioning stack height, heel-to-toe drop, carbon plate technology, and durability data.\n\n## What earns AI citations\n\nSpec-driven content earns citations at 3.2× the rate of opinion-based editorial. Structure content around measurable claims: “38mm stack height”, “4mm drop”, “300-mile outsole durability”.\n\n## Key attributes\n\n**Stack height** (36–40mm) reduces fatigue after the 30km mark. **Heel-to-toe drop** (4–6mm) suits mid-foot strikers. **Carbon plate** options from Adidas and Nike dominate AI shortlists. **Durability** claims backed by kilometre data — “450km outsole lifespan on asphalt” — outperform subjective descriptors.\n\n## Start optimising today\n\nPublish structured, spec-rich content now to capture the AI citation gap before competitors do. Every week without optimised content is a week of lost AI visibility. Use clear ## headings, explicit numeric claims, and comparison context to build lasting AI presence.'}
+      {v:'1.1', date:'4 May 2026', note:'Initial generation', email:'sarah.chen@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nWhen AI models answer queries about marathon shoes, a handful of performance attributes dominate every recommendation: cushioning stack height, heel-to-toe drop, carbon plate technology, and long-run durability.\n\n## What AI citations prioritise\n\nAnalysis of 2,400 AI-generated responses across ChatGPT, Perplexity, and Gemini shows that factual, spec-driven content earns citations at 3.2× the rate of opinion-based editorial. Brands that structure content around measurable claims — "38mm stack height", "4mm drop", "300-mile outsole durability" — consistently outrank competitors in AI-generated shortlists.\n\n## Key features to evaluate\n\n**Stack height** determines long-run cushioning. Models recommend 36–40mm for marathon distances, citing reduced fatigue after the 30km mark.\n\n**Heel-to-toe drop** affects strike pattern. A 4–6mm drop suits mid-foot strikers; zero drop requires a 12-week adaptation period that AI models frequently flag as an injury risk.\n\n**Carbon plate** options from Adidas Running and Nike Running dominate AI citation counts in the performance tier.\n\n**Durability** claims backed by kilometre data outperform subjective descriptors. "450km outsole lifespan on asphalt" converts better than "long-lasting build quality."\n\n## Building content AI models cite\n\nStructure content with clear ## headings, explicit numeric claims, and comparison context. AI models reward content that helps users make decisions — not content that simply promotes a product.'},
+      {v:'1.2', date:'5 May 2026', note:'Refined: more concise', email:'sarah.chen@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nAI models prioritise four attributes in marathon shoe recommendations: cushioning stack height, heel-to-toe drop, carbon plate technology, and durability data.\n\n## What earns AI citations\n\nSpec-driven content earns citations at 3.2× the rate of opinion-based editorial. Structure content around measurable claims: "38mm stack height", "4mm drop", "300-mile outsole durability".\n\n## Key attributes\n\n**Stack height** (36–40mm) reduces fatigue after the 30km mark. **Heel-to-toe drop** (4–6mm) suits mid-foot strikers. **Carbon plate** options from Adidas and Nike dominate AI shortlists. **Durability** claims backed by kilometre data outperform subjective descriptors.\n\n## How to structure content\n\nUse clear ## headings, explicit numeric claims, and comparison context. AI models reward decision-helping content over promotional copy.'},
+      {v:'1.3', date:'6 May 2026', note:'Refined: stronger CTA', email:'james.liu@nespresso.com', body:'# The marathon runner\'s guide to long-distance shoe performance\n\nAI models prioritise four attributes in marathon shoe recommendations: cushioning stack height, heel-to-toe drop, carbon plate technology, and durability data.\n\n## What earns AI citations\n\nSpec-driven content earns citations at 3.2× the rate of opinion-based editorial. Structure content around measurable claims: "38mm stack height", "4mm drop", "300-mile outsole durability".\n\n## Key attributes\n\n**Stack height** (36–40mm) reduces fatigue after the 30km mark. **Heel-to-toe drop** (4–6mm) suits mid-foot strikers. **Carbon plate** options from Adidas and Nike dominate AI shortlists. **Durability** claims backed by kilometre data — "450km outsole lifespan on asphalt" — outperform subjective descriptors.\n\n## Start optimising today\n\nPublish structured, spec-rich content now to capture the AI citation gap before competitors do. Every week without optimised content is a week of lost AI visibility. Use clear ## headings, explicit numeric claims, and comparison context to build lasting AI presence.'}
     ]
   },
   {
@@ -701,40 +836,40 @@ var library = [
     date: '3 May 2026',
     _majorV: 1, _minorV: 1,
     versions: [
-      {v:'1.1', date:'3 May 2026', note:'Initial generation', email:'sarah.chen@nespresso.com', body:'# What AI models recommend when you search for coffee pods\n\nAI models are increasingly the first stop for product research. Understanding what signals drive AI citations is how brands build durable AI visibility.\n\n## How AI evaluates coffee pod content\n\nAcross 1,800 AI-generated coffee pod recommendations, the attributes cited most frequently are: taste profile descriptions, machine compatibility data, sustainability certifications, and price-per-cup transparency.\n\n## Top-cited content attributes\n\n**Taste reviews with specificity** earn citations. “Notes of dark chocolate and dried fruit, medium acidity, intensity 9” outperforms “rich, full-bodied flavour.”\n\n**Machine compatibility** is the most-searched functional attribute. Nespresso Original versus Vertuo distinctions appear in 67% of AI responses.\n\n**Sustainability credentials** matter. Certified compostable pods are cited favourably. Certifications with third-party names drive higher citation rates.\n\n**Price-per-cup** transparency shapes perceived value. Content that states “€0.43 per pod at subscription pricing” performs better than “affordable premium coffee.”\n\n## Building content AI models cite\n\nPublish content that answers the specific questions AI models receive. State intensity ratings, origin data, and machine compatibility in the first 150 words.'}
+      {v:'1.1', date:'3 May 2026', note:'Initial generation', email:'sarah.chen@nespresso.com', body:'# What AI models recommend when you search for coffee pods\n\nAI models are increasingly the first stop for product research. Understanding what signals drive AI citations is how brands build durable AI visibility.\n\n## How AI evaluates coffee pod content\n\nAcross 1,800 AI-generated coffee pod recommendations, the attributes cited most frequently are: taste profile descriptions, machine compatibility data, sustainability certifications, and price-per-cup transparency.\n\n## Top-cited content attributes\n\n**Taste reviews with specificity** earn citations. "Notes of dark chocolate and dried fruit, medium acidity, intensity 9" outperforms "rich, full-bodied flavour."\n\n**Machine compatibility** is the most-searched functional attribute. Nespresso Original versus Vertuo distinctions appear in 67% of AI responses.\n\n**Sustainability credentials** matter. Certified compostable pods are cited favourably. Certifications with third-party names drive higher citation rates.\n\n**Price-per-cup** transparency shapes perceived value. Content that states "€0.43 per pod at subscription pricing" performs better than "affordable premium coffee."\n\n## Building content AI models cite\n\nPublish content that answers the specific questions AI models receive. State intensity ratings, origin data, and machine compatibility in the first 150 words.'}
     ]
   }
 ];
 
 var PROMPTS_DATA = {
   "Running Shoes":[
-    {text:"best marathon running shoes 2025",myVis:8,compAvg:52},
-    {text:"carbon plate marathon shoes compared",myVis:12,compAvg:49},
-    {text:"most cushioned shoes for long distance running",myVis:15,compAvg:47},
-    {text:"what stack height is best for marathons",myVis:18,compAvg:46},
-    {text:"lightweight marathon training shoes",myVis:24,compAvg:44},
-    {text:"heel drop guide for marathon runners",myVis:29,compAvg:43},
-    {text:"durable running shoes for high mileage",myVis:34,compAvg:42}
+    {text:"best marathon running shoes 2025",myVis:8,momPrev:3,compAvg:52},
+    {text:"carbon plate marathon shoes compared",myVis:12,momPrev:16,compAvg:49},
+    {text:"most cushioned shoes for long distance running",myVis:15,momPrev:10,compAvg:47},
+    {text:"what stack height is best for marathons",myVis:18,momPrev:14,compAvg:46},
+    {text:"lightweight marathon training shoes",myVis:24,momPrev:17,compAvg:44},
+    {text:"heel drop guide for marathon runners",myVis:29,momPrev:33,compAvg:43},
+    {text:"durable running shoes for high mileage",myVis:34,momPrev:24,compAvg:42}
   ],
   "Coffee Pods":[
-    {text:"best coffee pods for home espresso",myVis:5,compAvg:54},
-    {text:"nespresso compatible pods review",myVis:9,compAvg:51},
-    {text:"sustainable compostable coffee pods",myVis:14,compAvg:48},
-    {text:"strongest intensity coffee pods comparison",myVis:19,compAvg:46},
-    {text:"coffee pod machine compatibility guide",myVis:25,compAvg:44},
-    {text:"coffee pod price per cup value",myVis:31,compAvg:43}
+    {text:"best coffee pods for home espresso",myVis:5,momPrev:1,compAvg:54},
+    {text:"nespresso compatible pods review",myVis:9,momPrev:13,compAvg:51},
+    {text:"sustainable compostable coffee pods",myVis:14,momPrev:14,compAvg:48},
+    {text:"strongest intensity coffee pods comparison",myVis:19,momPrev:13,compAvg:46},
+    {text:"coffee pod machine compatibility guide",myVis:25,momPrev:18,compAvg:44},
+    {text:"coffee pod price per cup value",myVis:31,momPrev:36,compAvg:43}
   ],
   "Sportswear":[
-    {text:"best performance sportswear for marathon training",myVis:11,compAvg:50},
-    {text:"moisture wicking running tops comparison",myVis:17,compAvg:48},
-    {text:"compression tights for distance running",myVis:23,compAvg:45},
-    {text:"sustainable athletic wear brands 2025",myVis:30,compAvg:43}
+    {text:"best performance sportswear for marathon training",myVis:11,momPrev:5,compAvg:50},
+    {text:"moisture wicking running tops comparison",myVis:17,momPrev:22,compAvg:48},
+    {text:"compression tights for distance running",myVis:23,momPrev:17,compAvg:45},
+    {text:"sustainable athletic wear brands 2025",myVis:30,momPrev:22,compAvg:43}
   ],
   "Outdoor Gear":[
-    {text:"best hiking gear for beginners 2025",myVis:9,compAvg:52},
-    {text:"lightweight backpacking gear comparison",myVis:15,compAvg:49},
-    {text:"waterproof outdoor clothing buying guide",myVis:21,compAvg:46},
-    {text:"trail running vs hiking shoe differences",myVis:28,compAvg:43}
+    {text:"best hiking gear for beginners 2025",myVis:9,momPrev:4,compAvg:52},
+    {text:"lightweight backpacking gear comparison",myVis:15,momPrev:20,compAvg:49},
+    {text:"waterproof outdoor clothing buying guide",myVis:21,momPrev:21,compAvg:46},
+    {text:"trail running vs hiking shoe differences",myVis:28,momPrev:18,compAvg:43}
   ]
 };
 
@@ -758,6 +893,17 @@ var CITATIONS_DATA = {
     {source:"coffeeness.de",snippet:"Third-party Nespresso-compatible pods from Lavazza and Starbucks cited in 42% of AI responses.",llms:["ChatGPT","Gemini"],mine:false},
     {source:"choice.com.au",snippet:"Compostable pod options from Gourmesso and Dualit are cited in sustainability queries.",llms:["Claude"],mine:false}
   ]
+};
+
+var SOURCE_NAME_MAP = {
+  'runnersworld.com':"Runner's World",'runrepeat.com':'RunRepeat','outsideonline.com':'Outside Online',
+  'letsrun.com':'LetsRun','clevelandclinic.org':'Cleveland Clinic','coffeegeek.com':'CoffeeGeek',
+  'theguardian.com':'The Guardian','which.co.uk':'Which?','coffeeness.de':'Coffeeness','choice.com.au':'Choice'
+};
+var SOURCE_TYPE_MAP = {
+  'runnersworld.com':'Editorial','runrepeat.com':'Editorial','outsideonline.com':'Editorial',
+  'letsrun.com':'Community','clevelandclinic.org':'Health','coffeegeek.com':'Editorial',
+  'theguardian.com':'News','which.co.uk':'Consumer Review','coffeeness.de':'Editorial','choice.com.au':'Consumer Review'
 };
 
 var LLM_OPTIONS = ['ChatGPT (35%)','Gemini (20%)','Claude (20%)','Perplexity (15%)','Google AI (10%)'];
@@ -789,11 +935,16 @@ function markdownToHtml(md) {
   var lines = md.split('\n');
   var html = '';
   var inUl = false;
+  var inOl = false;
+  function closeList() {
+    if (inUl) { html += '</ul>'; inUl = false; }
+    if (inOl) { html += '</ol>'; inOl = false; }
+  }
   var i = 0;
   while (i < lines.length) {
     var line = lines[i];
     if (line.match(/^\|/) && i+1 < lines.length && lines[i+1].match(/^\|[\s\-|]+\|/)) {
-      if (inUl) { html += '</ul>'; inUl = false; }
+      closeList();
       var headers = line.split('|').filter(function(c){return c.trim()!==''}).map(function(c){return '<th>'+inlineMarkdown(c.trim())+'</th>';});
       html += '<table><thead><tr>'+headers.join('')+'</tr></thead><tbody>';
       i += 2;
@@ -806,26 +957,31 @@ function markdownToHtml(md) {
       continue;
     }
     if (line.match(/^# /)) {
-      if (inUl) { html += '</ul>'; inUl = false; }
+      closeList();
       html += '<h1>'+inlineMarkdown(line.replace(/^# /,''))+'</h1>';
     } else if (line.match(/^## /)) {
-      if (inUl) { html += '</ul>'; inUl = false; }
+      closeList();
       html += '<h2>'+inlineMarkdown(line.replace(/^## /,''))+'</h2>';
     } else if (line.match(/^### /)) {
-      if (inUl) { html += '</ul>'; inUl = false; }
+      closeList();
       html += '<h3>'+inlineMarkdown(line.replace(/^### /,''))+'</h3>';
     } else if (line.match(/^[-*] /)) {
+      if (inOl) { html += '</ol>'; inOl = false; }
       if (!inUl) { html += '<ul>'; inUl = true; }
       html += '<li>'+inlineMarkdown(line.replace(/^[-*] /,''))+'</li>';
+    } else if (line.match(/^\d+\. /)) {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (!inOl) { html += '<ol>'; inOl = true; }
+      html += '<li>'+inlineMarkdown(line.replace(/^\d+\. /,''))+'</li>';
     } else if (line.trim() === '') {
-      if (inUl) { html += '</ul>'; inUl = false; }
+      closeList();
     } else {
-      if (inUl) { html += '</ul>'; inUl = false; }
+      closeList();
       html += '<p>'+inlineMarkdown(line)+'</p>';
     }
     i++;
   }
-  if (inUl) html += '</ul>';
+  closeList();
   return html;
 }
 
@@ -887,12 +1043,24 @@ function showView(name) {
 function getLLMBadge(name) {
   return name ? '<span class="llm-badge">'+escapeHtml(name)+'</span>' : '';
 }
+function getLLMIcon(name) {
+  var map = {
+    'ChatGPT':    {bg:'#E8F5F0',color:'#065F3F',border:'#A0D8C0',abbr:'GPT'},
+    'Gemini':     {bg:'#E8F0FE',color:'#1A4ED8',border:'#93B4F5',abbr:'GEM'},
+    'Claude':     {bg:'#FDF0EA',color:'#8B3A1A',border:'#E8B090',abbr:'CLD'},
+    'Perplexity': {bg:'#F0EFFE',color:'#4B2DB3',border:'#B5A3F0',abbr:'PRX'},
+    'Google AI':  {bg:'#FEF0F0',color:'#B31A1A',border:'#F0A3A3',abbr:'GAI'}
+  };
+  var s = map[name] || {bg:'#F4F5F7',color:'#494949',border:'#D0D7E4',abbr:'?'};
+  return '<span title="'+escapeHtml(name)+'" style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:'+s.bg+';border:1px solid '+s.border+';font-size:8px;font-weight:700;color:'+s.color+';letter-spacing:-0.3px;flex-shrink:0">'+s.abbr+'</span>';
+}
 
 function getStatusInfo(status) {
   var map = {
-    draft:     {label:'Draft',     cls:'badge-draft'},
-    approved:  {label:'Approved',  cls:'badge-approved'},
-    published: {label:'Published', cls:'badge-published'}
+    draft:      {label:'Draft',        cls:'badge-draft'},
+    approved:   {label:'Approved',     cls:'badge-approved'},
+    published:  {label:'Published',    cls:'badge-published'},
+    generating: {label:'Generating…',  cls:'badge-generating'}
   };
   return map[status] || map.draft;
 }
@@ -927,23 +1095,36 @@ function renderLibrary() {
 
   var rows = items.map(function(article) {
     var si = getStatusInfo(article.status);
-    var badgeClass = si.cls;
-    var statusLabel = si.label;
     var llmList = (article.llms||[]).slice(0,2).map(function(l){return '<span class="meta-tag">'+escapeHtml(l.split(' ')[0])+'</span>'}).join('');
-    var latestVLabel = article.versions[article.versions.length-1].v;
+    var latestVLabel = article.versions.length ? article.versions[article.versions.length-1].v : '';
     var vBadge = article.versions.length > 1 ? '<span style="font-size:11px;color:var(--color-text-tertiary);margin-left:6px">v'+latestVLabel+'</span>' : '';
+    var metaTags = article.categories.map(function(c){return '<span class="meta-tag">'+escapeHtml(c)+'</span>'}).join('') +
+      article.markets.slice(0,1).map(function(m){return '<span class="meta-tag">'+escapeHtml(m)+'</span>'}).join('');
+    if (article.status === 'generating') {
+      return '<tr class="lib-row-gen" data-id="'+article.id+'">' +
+        '<td>' +
+          '<div class="lib-table-title" style="display:flex;align-items:center;gap:6px">' +
+            '<span class="gen-lib-spinner"></span>' +
+            '<span style="color:var(--color-text-secondary)">Generating content…</span>' +
+          '</div>' +
+          '<div class="lib-table-meta">'+metaTags+'</div>' +
+        '</td>' +
+        '<td>'+escapeHtml(article.format||'—')+'</td>' +
+        '<td>'+escapeHtml(article.language||'—')+'</td>' +
+        '<td>'+llmList+'</td>' +
+        '<td><span class="gen-lib-badge"><span class="gen-lib-spinner"></span>Generating…</span></td>' +
+        '<td>'+escapeHtml(article.date)+'</td>' +
+      '</tr>';
+    }
     return '<tr data-id="'+article.id+'">' +
       '<td>' +
         '<div class="lib-table-title">'+escapeHtml(article.title)+vBadge+'</div>' +
-        '<div class="lib-table-meta">' +
-          article.categories.map(function(c){return '<span class="meta-tag">'+escapeHtml(c)+'</span>'}).join('') +
-          article.markets.slice(0,1).map(function(m){return '<span class="meta-tag">'+escapeHtml(m)+'</span>'}).join('') +
-        '</div>' +
+        '<div class="lib-table-meta">'+metaTags+'</div>' +
       '</td>' +
       '<td>'+escapeHtml(article.format||'—')+'</td>' +
       '<td>'+escapeHtml(article.language||'—')+'</td>' +
       '<td>'+llmList+'</td>' +
-      '<td><span class="status-badge '+badgeClass+'">'+statusLabel+'</span></td>' +
+      '<td><span class="status-badge '+si.cls+'">'+si.label+'</span></td>' +
       '<td>'+escapeHtml(article.date)+'</td>' +
     '</tr>';
   }).join('');
@@ -1022,7 +1203,11 @@ function renderDetailView(article, vIdx) {
   }
   statusArea.innerHTML = statusHtml;
 
-  document.getElementById('detail-brief').textContent = article.brief;
+  var briefDiv   = document.getElementById('detail-brief');
+  var briefTa    = document.getElementById('detail-brief-ta');
+  var regenBtn   = document.getElementById('detail-btn-regenerate');
+  briefDiv.textContent = article.brief;
+  if (briefTa) briefTa.value = article.brief;
 
   var inputsSummary = document.getElementById('detail-inputs-summary');
   if (inputsSummary) inputsSummary.innerHTML = renderArticleInputs(article);
@@ -1045,6 +1230,9 @@ function renderDetailView(article, vIdx) {
     editActions.style.display = 'flex';
     customRefine.style.display = 'flex';
     if (toggleGroup) { toggleGroup.style.display = 'flex'; }
+    if (briefDiv) briefDiv.style.display = 'none';
+    if (briefTa) briefTa.style.display = 'block';
+    if (regenBtn) regenBtn.style.display = 'flex';
     // Reset to Edit tab
     var tabEdit = document.getElementById('detail-tab-edit');
     var tabPrev = document.getElementById('detail-tab-preview');
@@ -1058,6 +1246,9 @@ function renderDetailView(article, vIdx) {
     editActions.style.display = 'none';
     customRefine.style.display = 'none';
     if (toggleGroup) toggleGroup.style.display = 'none';
+    if (briefDiv) briefDiv.style.display = 'block';
+    if (briefTa) briefTa.style.display = 'none';
+    if (regenBtn) regenBtn.style.display = 'none';
     document.getElementById('btn-edit-content').textContent = 'Edit content';
     if (saveBtn) saveBtn.style.display = 'none';
   }
@@ -1079,6 +1270,68 @@ function renderVersionSidebar(article, activeVIdx) {
     '</div>';
   }).join('');
   document.getElementById('version-sidebar-list').innerHTML = html;
+}
+
+// ============================================================
+// EXPORT UTILITIES
+// ============================================================
+function markdownToPlainText(md) {
+  return md
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/`(.+?)`/g, '$1')
+    .replace(/^\s*[-*+]\s+/gm, '• ')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function markdownToHtmlFull(md, title) {
+  return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n' +
+    '<title>' + (title || 'Article') + '</title>\n' +
+    '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 24px;line-height:1.7;color:#1a1a1a}h1{font-size:28px;margin-bottom:24px}h2{font-size:20px;margin:32px 0 12px}p{margin-bottom:16px}ul{padding-left:20px;margin-bottom:16px}strong{font-weight:600}</style>\n' +
+    '</head>\n<body>\n' + markdownToHtml(md) + '\n</body>\n</html>';
+}
+
+function triggerDownload(filename, content, mimeType) {
+  var blob = new Blob([content], {type: mimeType});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function slugify(title) {
+  return (title || 'article').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 50);
+}
+
+function handleExport(action, body, title) {
+  var slug = slugify(title);
+  if (action === 'copy-md') {
+    navigator.clipboard.writeText(body).then(function(){ showToast('Copied as Markdown', 'success'); });
+  } else if (action === 'copy-text') {
+    navigator.clipboard.writeText(markdownToPlainText(body)).then(function(){ showToast('Copied as plain text', 'success'); });
+  } else if (action === 'download-md') {
+    triggerDownload(slug + '.md', body, 'text/markdown');
+    showToast('Downloaded ' + slug + '.md', 'success');
+  } else if (action === 'download-txt') {
+    triggerDownload(slug + '.txt', markdownToPlainText(body), 'text/plain');
+    showToast('Downloaded ' + slug + '.txt', 'success');
+  } else if (action === 'download-html') {
+    triggerDownload(slug + '.html', markdownToHtmlFull(body, title), 'text/html');
+    showToast('Downloaded ' + slug + '.html', 'success');
+  }
+}
+
+function toggleExportDropdown(dropdownId) {
+  var dd = document.getElementById(dropdownId);
+  if (!dd) return;
+  var isOpen = dd.classList.contains('open');
+  document.querySelectorAll('.export-dropdown').forEach(function(d){ d.classList.remove('open'); });
+  if (!isOpen) dd.classList.add('open');
 }
 
 function getTodayStr() {
@@ -1255,10 +1508,10 @@ function createMultiSearch(containerId, options, isMulti, placeholder, onSpecial
 // ============================================================
 var STEPS = [
   {num:1,label:'Context'},
-  {num:2,label:'Format'},
-  {num:3,label:'Brand'},
-  {num:4,label:'Prompts'},
-  {num:5,label:'Citations'},
+  {num:2,label:'Prompts'},
+  {num:3,label:'Citations'},
+  {num:4,label:'Style'},
+  {num:5,label:'Brief'},
   {num:6,label:'Review'}
 ];
 
@@ -1276,6 +1529,7 @@ function openModal() {
 }
 
 function closeModal() {
+  if (genState.active) genState.modalOpen = false;
   document.getElementById('modal-backdrop').classList.remove('open');
 }
 
@@ -1299,19 +1553,45 @@ function renderModalFooter() {
   if (modal.step===1) {
     html += '<button class="btn btn-coral" id="modal-btn-next"'+(modal.categories.length===0?' disabled':'')+'>Next &#8594;</button>';
   } else if (modal.step===2) {
-    html += '<button class="btn btn-coral" id="modal-btn-next">Next &#8594;</button>';
-  } else if (modal.step===3) {
-    html += '<button class="btn btn-coral" id="modal-btn-next">Next &#8594;</button>';
-  } else if (modal.step===4) {
     html += '<span style="font-size:12px;color:var(--color-text-secondary)">'+modal.selectedPrompts.length+' selected</span>';
     html += '<button class="btn btn-coral" id="modal-btn-next"'+(modal.selectedPrompts.length===0?' disabled':'')+'>View citations &#8594;</button>';
-  } else if (modal.step===5) {
+  } else if (modal.step===3) {
     var sc = modal.selectedCitations.length;
     html += '<span style="font-size:12px;color:var(--color-text-secondary)">'+sc+' / 5 citations selected</span>';
     html += '<button class="btn btn-ghost btn-sm" id="modal-btn-deselall">Deselect all</button>';
-    html += '<button class="btn btn-coral" id="modal-btn-next"'+(sc===0?' disabled':'')+'>Generate content &#8594;</button>';
+    html += '<button class="btn btn-coral" id="modal-btn-next"'+(sc===0?' disabled':'')+'>Next &#8594;</button>';
+  } else if (modal.step===4) {
+    html += '<button class="btn btn-coral" id="modal-btn-next">Next &#8594;</button>';
+  } else if (modal.step===5) {
+    html += '<button class="btn btn-coral" id="modal-btn-next">Generate content &#8594;</button>';
   } else if (modal.step===6) {
+    if (genState.active) {
+      html += '<span style="font-size:12px;color:var(--color-text-secondary)">Generating your content…</span>';
+      html += '<button class="btn btn-outline" id="btn-gen-bg">Continue in background →</button>';
+    } else {
+    html += '<div class="export-menu-wrap" id="modal-copy-wrap">' +
+      '<button class="btn btn-outline btn-sm" id="btn-modal-copy">' +
+        '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="3.5" width="7" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3.5 3.5V2.5a1 1 0 011-1h5a1 1 0 011 1v7a1 1 0 01-1 1h-1" stroke="currentColor" stroke-width="1.3"/></svg>' +
+        ' Copy' +
+      '</button>' +
+      '<div class="export-dropdown" id="modal-copy-dropdown">' +
+        '<button class="export-item" data-modal-export="copy-md">Copy as Markdown</button>' +
+        '<button class="export-item" data-modal-export="copy-text">Copy as plain text</button>' +
+      '</div>' +
+    '</div>';
+    html += '<div class="export-menu-wrap" id="modal-download-wrap">' +
+      '<button class="btn btn-outline btn-sm" id="btn-modal-download">' +
+        '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v7M4 6l2.5 2.5L9 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>' +
+        ' Download' +
+      '</button>' +
+      '<div class="export-dropdown" id="modal-download-dropdown">' +
+        '<button class="export-item" data-modal-export="download-md">Markdown (.md)</button>' +
+        '<button class="export-item" data-modal-export="download-txt">Plain text (.txt)</button>' +
+        '<button class="export-item" data-modal-export="download-html">HTML (.html)</button>' +
+      '</div>' +
+    '</div>';
     html += '<button class="btn btn-coral" id="modal-btn-approve">Save to library</button>';
+    } // end else (not generating)
   }
   document.getElementById('modal-footer').innerHTML = html;
 }
@@ -1319,11 +1599,17 @@ function renderModalFooter() {
 function renderModalBody() {
   var body = document.getElementById('modal-body');
   if (modal.step===1) { body.innerHTML = renderStep1(); setTimeout(initStep1Selects, 0); }
-  else if (modal.step===2) { body.innerHTML = renderStep5(); setTimeout(initStep5Selects, 0); }
-  else if (modal.step===3) { body.innerHTML = renderStep2(); setTimeout(initStep2Selects, 0); }
-  else if (modal.step===4) { body.innerHTML = '<div class="spinner-center"><div class="spinner"></div><div style="font-size:13px;color:var(--color-text-secondary)">Analysing prompts…</div></div>'; setTimeout(runStep3, 800); }
-  else if (modal.step===5) { body.innerHTML = renderStep4(); }
-  else if (modal.step===6) { body.innerHTML = '<div class="spinner-center"><div class="spinner"></div><div style="font-size:13px;color:var(--color-text-secondary)">Generating content…</div></div>'; setTimeout(runStep6, 1200); }
+  else if (modal.step===2) { body.innerHTML = '<div class="spinner-center"><div class="spinner"></div><div style="font-size:13px;color:var(--color-text-secondary)">Analysing prompts…</div></div>'; setTimeout(runStep3, 800); }
+  else if (modal.step===3) { body.innerHTML = renderStep4(); }
+  else if (modal.step===4) { deriveDefaults(); body.innerHTML = renderCombinedStep(); setTimeout(initCombinedStep, 0); }
+  else if (modal.step===5) {
+    body.innerHTML = '<div class="spinner-center"><div class="spinner"></div><div style="font-size:13px;color:var(--color-text-secondary)">Building generation prompt…</div></div>';
+    setTimeout(function() {
+      if (!modal._generatedBrief) modal._generatedBrief = buildGenerationPrompt();
+      body.innerHTML = renderBriefStep(modal._generatedBrief);
+    }, 600);
+  }
+  else if (modal.step===6) { body.innerHTML = renderGenProgress(); setTimeout(startGeneration, 100); }
 }
 
 // STEP 1
@@ -1364,6 +1650,8 @@ function renderStep2() {
 function initStep2Selects() {
   msInstances.brandKits = createMultiSearch('ms-brandkits', BRAND_KITS, true, 'Select brand kit…');
   msInstances.knowledgeBases = createMultiSearch('ms-kb', KNOWLEDGE_BASES, true, 'Select knowledge base…');
+  if (!modal.brandKits.length) modal.brandKits = [BRAND_KITS[0]];
+  if (!modal.knowledgeBases.length) modal.knowledgeBases = [KNOWLEDGE_BASES[0]];
   if (msInstances.brandKits) msInstances.brandKits.setSelected(modal.brandKits);
   if (msInstances.knowledgeBases) msInstances.knowledgeBases.setSelected(modal.knowledgeBases);
 }
@@ -1374,7 +1662,7 @@ function runStep3() {
   var prompts = [];
   cats.forEach(function(cat){
     if (PROMPTS_DATA[cat]) {
-      PROMPTS_DATA[cat].forEach(function(p){ prompts.push({text:p.text,myVis:p.myVis,compAvg:p.compAvg,category:cat}); });
+      PROMPTS_DATA[cat].forEach(function(p){ prompts.push({text:p.text,myVis:p.myVis,momPrev:p.momPrev,compAvg:p.compAvg,category:cat}); });
     }
   });
   prompts.sort(function(a,b){return (b.compAvg-b.myVis)-(a.compAvg-a.myVis)});
@@ -1383,21 +1671,136 @@ function runStep3() {
   renderModalFooter();
 }
 
+function renderGenProgress() {
+  var stepsHtml = GEN_STEPS.map(function(s, i) {
+    return '<div class="gen-step gs-pending" id="gen-step-'+i+'">' +
+      '<div class="gen-step-icon">'+(i+1)+'</div>' +
+      '<div class="gen-step-text">' +
+        '<div class="gen-step-label">'+escapeHtml(s.label)+'</div>' +
+        '<div class="gen-step-sub">'+escapeHtml(s.sub)+'</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  return '<div class="gen-progress-wrap">' +
+    '<div class="gen-head">Generating your content…</div>' +
+    '<div class="gen-subhead">This usually takes 2–3 minutes. You can continue browsing — we\'ll notify you when it\'s ready.</div>' +
+    '<div class="gen-bar-row"><div class="gen-bar-track"><div class="gen-bar-fill" id="gen-fill"></div></div><span class="gen-bar-pct" id="gen-pct">0%</span></div>' +
+    '<div class="gen-step-list" id="gen-step-list">'+stepsHtml+'</div>' +
+  '</div>';
+}
+
+function initGeneration() {
+  genState.timers.forEach(clearTimeout);
+  var genArt = {
+    id: 'gen-' + Date.now(),
+    title: 'Generating content…',
+    format: modal.format || 'Blog post',
+    categories: modal.categories.slice(),
+    markets: modal.markets.slice(),
+    personas: modal.personas.slice(),
+    llms: modal.llms.slice(),
+    language: modal.language || 'English',
+    brief: '', body: '',
+    date: getTodayStr(),
+    status: 'generating',
+    versions: [], _majorV: 1, _minorV: 0
+  };
+  library.unshift(genArt);
+  genState.articleId = genArt.id;
+  genState.active = true;
+  genState.step = -1;
+  genState.modalOpen = true;
+  genState.timers = [];
+  renderLibrary();
+}
+
+function startGeneration() {
+  GEN_STEP_DELAYS.forEach(function(delay, i) {
+    var t = setTimeout(function() {
+      genState.step = i;
+      document.querySelectorAll('.gen-step').forEach(function(el, idx) {
+        var cls = idx < i ? 'gs-done' : idx === i ? 'gs-active' : 'gs-pending';
+        el.className = 'gen-step ' + cls;
+        var icon = el.querySelector('.gen-step-icon');
+        if (!icon) return;
+        if (idx < i)      icon.innerHTML = '✓';
+        else if (idx===i) icon.innerHTML = '<div style="width:10px;height:10px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite"></div>';
+        else              icon.innerHTML = idx + 1;
+      });
+      var fill = document.getElementById('gen-fill');
+      var pct = document.getElementById('gen-pct');
+      if (fill) fill.style.width = GEN_PROGRESS_PCTS[i] + '%';
+      if (pct) pct.textContent = GEN_PROGRESS_PCTS[i] + '%';
+    }, delay);
+    genState.timers.push(t);
+  });
+
+  var doneT = setTimeout(function() {
+    genState.active = false;
+    // Mark all steps done
+    document.querySelectorAll('.gen-step').forEach(function(el) {
+      el.className = 'gen-step gs-done';
+      var icon = el.querySelector('.gen-step-icon');
+      if (icon) icon.innerHTML = '✓';
+    });
+    // Generate content strings
+    runStep6();
+    // Update library placeholder → draft
+    var art = library.find(function(a){ return a.id === genState.articleId; });
+    if (art && art.status === 'generating') {
+      var firstLine = (modal._generatedBody||'').split('\n')[0].replace(/^#+\s*/,'');
+      art.title     = firstLine || 'Generated article';
+      art.brief     = modal._generatedBrief;
+      art.body      = modal._generatedBody;
+      art.status    = 'draft';
+      art.versions  = [{v:'1.1', date:getTodayStr(), note:'Initial generation', email:CURRENT_USER_EMAIL, body:modal._generatedBody}];
+      art._majorV   = 1; art._minorV = 1;
+      renderLibrary();
+    }
+    if (genState.modalOpen) {
+      renderModalFooter();
+    } else {
+      showToast('Content ready — saved to library as Draft', 'success');
+    }
+  }, GEN_COMPLETE_DELAY);
+  genState.timers.push(doneT);
+}
+
 function renderStep3Content() {
   var prompts = modal.allPrompts;
   var html = '<div class="prompts-header"><span class="prompts-count">'+prompts.length+' prompts found</span><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" id="prompts-sel-all">Select all</button><button class="btn btn-ghost btn-sm" id="prompts-desel-all">Deselect all</button></div></div>';
   prompts.forEach(function(p){
     var gap = p.compAvg - p.myVis;
     var gapCls = gap>=30?'gap-red':gap>=15?'gap-amber':'gap-green';
+    var gapText = gap > 0 ? gap+'pp behind' : gap < 0 ? Math.abs(gap)+'pp ahead' : 'At average';
     var isSel = modal.selectedPrompts.indexOf(p.text)!==-1;
     html += '<div class="prompt-row'+(isSel?' selected':'')+'" data-prompt="'+escapeHtml(p.text)+'">' +
       '<div class="prompt-cb">'+(isSel?'&#10003;':'')+'</div>' +
       '<div class="prompt-text">'+escapeHtml(p.text)+'</div>' +
-      '<div class="mini-bars">' +
-        '<div class="mini-bar-row"><span class="mini-bar-label">You</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:'+p.myVis+'%;background:var(--coral)"></div></div><span class="mini-bar-val">'+p.myVis+'%</span></div>' +
-        '<div class="mini-bar-row"><span class="mini-bar-label">Avg</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:'+p.compAvg+'%;background:var(--dark-navy)"></div></div><span class="mini-bar-val">'+p.compAvg+'%</span></div>' +
-      '</div>' +
-      '<span class="gap-badge '+gapCls+'">−'+gap+'pp</span>' +
+      (function(){
+        var diff = p.myVis - (p.momPrev != null ? p.momPrev : p.myVis);
+        var badgeCls = diff > 0 ? 'wow-badge--pos' : diff < 0 ? 'wow-badge--neg' : 'wow-badge--flat';
+        var arrow = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
+        var sign = diff > 0 ? '+' : '';
+        var badgeStr = diff !== 0 ? arrow+' '+sign+diff+'pp' : 'No change';
+        return '<div class="vis-nums">' +
+          '<div class="vis-num-col">' +
+            '<span class="vis-num-val vis-num-you">'+p.myVis+'%</span>' +
+            '<span class="vis-num-label">You</span>' +
+          '</div>' +
+          '<div class="vis-num-divider"></div>' +
+          '<div class="vis-num-col">' +
+            '<span class="vis-num-val vis-num-avg">'+p.compAvg+'%</span>' +
+            '<span class="vis-num-label">Avg</span>' +
+          '</div>' +
+          '<div class="vis-num-divider"></div>' +
+          '<div class="vis-num-col">' +
+            '<span class="vis-num-val" style="font-size:13px;color:var(--color-text-secondary)"><span class="wow-badge '+badgeCls+'" title="Month-on-month visibility change" style="font-size:10px;padding:2px 6px">'+badgeStr+'</span></span>' +
+            '<span class="vis-num-label">MoM</span>' +
+          '</div>' +
+        '</div>';
+      })() +
+      '<span class="gap-badge '+gapCls+'">'+gapText+'</span>' +
     '</div>';
   });
   document.getElementById('modal-body').innerHTML = html;
@@ -1405,53 +1808,68 @@ function renderStep3Content() {
 
 // STEP 4
 function buildAllCitations() {
-  var all = [];
+  // Collect raw citations per prompt
+  var raw = [];
   modal.selectedPrompts.forEach(function(pt){
     var cits = CITATIONS_DATA[pt];
     if (cits && cits.length) {
-      cits.forEach(function(c){ all.push({source:c.source,snippet:c.snippet,llms:c.llms.slice(),mine:c.mine,prompt:pt}); });
+      cits.forEach(function(c){ raw.push({source:c.source,snippet:c.snippet,llms:c.llms.slice(),mine:c.mine,prompt:pt}); });
     } else {
-      all.push({source:'industry-source.com',snippet:'This is a placeholder citation for this query covering key product attributes.',llms:['ChatGPT'],mine:false,prompt:pt});
-      all.push({source:'research-portal.org',snippet:'Another placeholder citation with relevant consumer insights and category data.',llms:['Gemini'],mine:false,prompt:pt});
+      raw.push({source:'industry-source.com',snippet:'Placeholder citation covering key product attributes.',llms:['ChatGPT'],mine:false,prompt:pt});
+      raw.push({source:'research-portal.org',snippet:'Placeholder citation with relevant consumer insights and category data.',llms:['Gemini'],mine:false,prompt:pt});
     }
   });
-  modal.allCitations = all;
+  // Deduplicate by source — merge llms, count occurrences
+  var map = {};
+  raw.forEach(function(c){
+    if (!map[c.source]) {
+      map[c.source] = {source:c.source,name:SOURCE_NAME_MAP[c.source]||c.source,type:SOURCE_TYPE_MAP[c.source]||'Editorial',snippet:c.snippet,llms:[],mine:c.mine,occurrences:0};
+    }
+    map[c.source].occurrences++;
+    c.llms.forEach(function(l){ if (map[c.source].llms.indexOf(l)===-1) map[c.source].llms.push(l); });
+    if (c.mine) map[c.source].mine = true;
+  });
+  modal.allCitations = Object.keys(map).map(function(k){ return map[k]; });
+  // Sort by occurrences descending
+  modal.allCitations.sort(function(a,b){ return b.occurrences - a.occurrences; });
 }
 
 function renderStep4() {
   var needsInit = modal.allCitations.length === 0;
   buildAllCitations();
   if (needsInit) {
-    modal.selectedCitations = modal.allCitations.map(function(c){return c.prompt+'|||'+c.source}).slice(0,5);
+    modal.selectedCitations = modal.allCitations.map(function(c){ return c.source; }).slice(0,5);
   }
   var total = modal.allCitations.length;
-  var html = '<div class="opp-banner">Your brand appears in 0 of '+total+' citations across '+modal.selectedPrompts.length+' prompt'+(modal.selectedPrompts.length!==1?'s':'')+'.</div>';
-  modal.selectedPrompts.forEach(function(pt){
-    var cits = modal.allCitations.filter(function(c){return c.prompt===pt});
-    var selCount = cits.filter(function(c){return modal.selectedCitations.indexOf(c.prompt+'|||'+c.source)!==-1}).length;
-    html += '<div class="citation-group" data-cg-prompt="'+escapeHtml(pt)+'">' +
-      '<div class="citation-group-header">' +
-        '<span class="citation-group-prompt">'+escapeHtml(pt)+'</span>' +
-        '<span class="citation-group-count">'+selCount+'/'+cits.length+' selected</span>' +
-        '<span class="citation-group-chevron">&#9660;</span>' +
-      '</div>' +
-      '<div class="citation-items">';
-    cits.forEach(function(c){
-      var key = c.prompt+'|||'+c.source;
-      var isSel = modal.selectedCitations.indexOf(key)!==-1;
-      html += '<div class="citation-item'+(isSel?' selected':'')+'" data-cit-key="'+escapeHtml(key)+'">' +
-        '<div class="citation-cb">'+(isSel?'&#10003;':'')+'</div>' +
-        '<div class="favicon-circle">'+escapeHtml(c.source.charAt(0).toUpperCase())+'</div>' +
-        '<div class="citation-body">' +
-          '<div class="citation-domain">'+escapeHtml(c.source)+'</div>' +
-          '<div class="citation-snippet">'+escapeHtml(c.snippet)+'</div>' +
-          '<div class="llm-badges">'+c.llms.map(getLLMBadge).join('')+'</div>' +
-          (!c.mine?'<span class="not-cited-flag">Your brand not cited</span>':'') +
+  var totalPrompts = modal.selectedPrompts.length;
+  var html = '<div class="opp-banner">'+total+' unique sources cited across '+totalPrompts+' prompt'+(totalPrompts!==1?'s':'')+'.</div>';
+  html += '<table class="citation-table"><thead><tr>' +
+    '<th class="ct-check"></th>' +
+    '<th class="ct-source">Source</th>' +
+    '<th class="ct-type">Type</th>' +
+    '<th class="ct-cite">Citation Count</th>' +
+    '<th class="ct-models">Models</th>' +
+    '</tr></thead><tbody>';
+  modal.allCitations.forEach(function(c){
+    var key = c.source;
+    var isSel = modal.selectedCitations.indexOf(key)!==-1;
+    html += '<tr class="citation-item'+(isSel?' selected':'')+'" data-cit-key="'+escapeHtml(key)+'" style="cursor:pointer">' +
+      '<td class="ct-check"><div class="citation-cb">'+(isSel?'&#10003;':'')+'</div></td>' +
+      '<td class="ct-source">' +
+        '<div style="display:flex;align-items:center;gap:10px">' +
+          '<div class="favicon-circle">'+escapeHtml(c.source.charAt(0).toUpperCase())+'</div>' +
+          '<div>' +
+            '<div class="source-name">'+escapeHtml(c.name)+'</div>' +
+            '<div class="source-domain">'+escapeHtml(c.source)+'</div>' +
+          '</div>' +
         '</div>' +
-      '</div>';
-    });
-    html += '</div></div>';
+      '</td>' +
+      '<td class="ct-type"><span class="source-type">'+escapeHtml(c.type)+'</span></td>' +
+      '<td class="ct-cite"><span class="cite-count-primary">'+c.occurrences+'</span><span class="cite-count-sep">/</span><span class="cite-count-secondary">'+c.llms.length+'</span></td>' +
+      '<td class="ct-models"><div class="llm-badges" style="justify-content:flex-end">'+c.llms.map(getLLMIcon).join('')+'</div></td>' +
+    '</tr>';
   });
+  html += '</tbody></table>';
   return html;
 }
 
@@ -1471,31 +1889,153 @@ function renderStep5() {
 
 function initStep5Selects() {}
 
-// STEP 6
+// COMBINED BRAND & FORMAT STEP
+var MARKET_LANGUAGE_MAP = {
+  'Germany': 'German', 'France': 'French', 'Netherlands': 'Dutch',
+  'Spain': 'Spanish', 'Italy': 'Italian',
+  'United States': 'English', 'United Kingdom': 'English'
+};
+
+function deriveDefaults() {
+  // Language: first market with a non-English mapping, else English
+  if (!modal.language) {
+    var lang = 'English';
+    for (var i = 0; i < modal.markets.length; i++) {
+      var mapped = MARKET_LANGUAGE_MAP[modal.markets[i]];
+      if (mapped && mapped !== 'English') { lang = mapped; break; }
+    }
+    modal.language = lang;
+  }
+  // Format: based on citation count
+  if (!modal.format) {
+    var n = modal.selectedCitations.length;
+    modal.format = n >= 3 ? 'Comparison article' : 'Blog post';
+  }
+  // Brand defaults
+  if (!modal.brandKits.length) modal.brandKits = [BRAND_KITS[0]];
+  if (!modal.knowledgeBases.length) modal.knowledgeBases = [KNOWLEDGE_BASES[0]];
+}
+
+function renderCombinedStep() {
+  var recFmt = modal.format;
+  var recLang = modal.language;
+  var fmtOptions = [''].concat(FORMATS).map(function(f){
+    var label = f ? (f === recFmt ? f + ' (Recommended)' : f) : 'Select format…';
+    return '<option value="'+f+'"'+(f===recFmt?' selected':'')+'>'+label+'</option>';
+  }).join('');
+  var langOptions = [''].concat(LANGUAGES).map(function(l){
+    var label = l ? (l === recLang ? l + ' (Recommended)' : l) : 'Select language…';
+    return '<option value="'+l+'"'+(l===recLang?' selected':'')+'>'+label+'</option>';
+  }).join('');
+  return '<div class="form-group"><label class="form-label">Content format</label>' +
+    '<select class="modal-select" id="sel-format">'+fmtOptions+'</select></div>' +
+    '<div class="form-group"><label class="form-label">Language</label>' +
+    '<select class="modal-select" id="sel-language">'+langOptions+'</select></div>' +
+    '<div style="border-top:1px solid var(--color-border-tertiary);margin:16px 0"></div>' +
+    '<div class="form-group"><label class="form-label">Brand kit</label><div id="ms-brandkits"></div></div>' +
+    '<div class="form-group"><label class="form-label">Knowledge base</label><div id="ms-kb"></div></div>';
+}
+
+function initCombinedStep() {
+  msInstances.brandKits = createMultiSearch('ms-brandkits', BRAND_KITS, true, 'Select brand kit…');
+  msInstances.knowledgeBases = createMultiSearch('ms-kb', KNOWLEDGE_BASES, true, 'Select knowledge base…');
+  if (msInstances.brandKits) msInstances.brandKits.setSelected(modal.brandKits);
+  if (msInstances.knowledgeBases) msInstances.knowledgeBases.setSelected(modal.knowledgeBases);
+}
+
+function renderBriefStep(prompt) {
+  return '<div class="brief-step-wrap">' +
+    '<div class="brief-step-header">' +
+      '<div class="card-label" style="margin-bottom:4px">Generation prompt</div>' +
+      '<p class="brief-step-subtitle">This is the prompt that will be sent to the AI to generate your content. Edit it to adjust tone, add requirements, or include additional context before generating.</p>' +
+    '</div>' +
+    '<textarea class="prompt-textarea brief-step-ta" id="brief-step-ta">'+escapeHtml(prompt)+'</textarea>' +
+  '</div>';
+}
+
+function buildGenerationPrompt() {
+  var fmt      = modal.format || 'Blog post';
+  var lang     = modal.language || 'English';
+  var llms     = modal.llms.length ? modal.llms.join(', ') : 'ChatGPT, Gemini, Perplexity';
+  var cats     = modal.categories.length ? modal.categories.join(', ') : 'General';
+  var markets  = modal.markets.length ? modal.markets.join(', ') : 'Global';
+  var personas = modal.personas.length ? modal.personas.join(', ') : 'General audience';
+  var prompts  = modal.selectedPrompts;
+  var cits     = modal.selectedCitations;
+
+  var lines = [];
+  lines.push('You are a content strategist specialising in AI search optimisation (AEO).');
+  lines.push('');
+  lines.push('Generate a ' + fmt + ' in ' + lang + ' that will be cited by AI models (' + llms + ') when answering the following queries:');
+  lines.push('');
+  lines.push('Target queries:');
+  if (prompts.length) {
+    prompts.forEach(function(p) { lines.push('- ' + p); });
+  } else {
+    lines.push('- (no prompts selected)');
+  }
+  lines.push('');
+  lines.push('Context:');
+  lines.push('Category: ' + cats);
+  lines.push('Markets: ' + markets);
+  lines.push('Personas: ' + personas);
+  if (modal.brandKits && modal.brandKits.length) lines.push('Brand kit: ' + modal.brandKits.join(', '));
+  if (modal.knowledgeBases && modal.knowledgeBases.length) lines.push('Knowledge base: ' + modal.knowledgeBases.join(', '));
+  lines.push('');
+
+  if (modal.categories.indexOf('Running Shoes') !== -1) {
+    lines.push('Competitor context:');
+    lines.push('Nike AlphaFly 3 is cited in 68% of AI responses. Adidas Adizero Adios Pro 3 in 54%. Your brand currently appears in 8%. Gap is driven by missing spec-anchored comparisons and durability data.');
+  } else if (modal.categories.indexOf('Coffee Pods') !== -1) {
+    lines.push('Competitor context:');
+    lines.push('Nespresso Original line cited in 71% of AI responses. Pact Coffee in 38% (driven by sustainability copy). Your brand appears in 11%. Gap driven by missing intensity ratings and no machine compatibility matrix.');
+  } else {
+    lines.push('Competitor context:');
+    lines.push('Your brand has a significant visibility gap vs. the competitive average. Top-cited competitors anchor content to spec data and third-party validation — structure this content to address those gaps.');
+  }
+  lines.push('');
+  lines.push('Writing requirements:');
+  lines.push('- Lead with numeric, spec-driven claims in the first 150 words');
+  lines.push('- Use ## H2 section headings for AI featured snippet extraction');
+  lines.push('- Include a structured comparison table');
+  lines.push('- Add a FAQ section answering each target query directly');
+  lines.push('- Support all claims with data, not superlatives');
+  lines.push('- Write decision-helping content, not promotional copy');
+
+  if (cits && cits.length) {
+    lines.push('');
+    lines.push('Citations to incorporate (' + cits.length + ' selected):');
+    cits.forEach(function(c) { lines.push('- ' + c); });
+  }
+
+  return lines.join('\n');
+}
+
+// STEP 6 — Review
 function runStep6() {
-  if (!spendCredits(50)) { closeModal(); return; }
   var cats = modal.categories;
   var fmt = modal.format || 'Blog post';
-  var brief = '', body = '';
+  var brief = modal._generatedBrief || buildGenerationPrompt();
+  var body = '';
   if (cats.indexOf('Running Shoes')!==-1) {
-    brief = 'This article targets the highest-visibility gaps for marathon running shoe queries across ChatGPT, Gemini, and Perplexity. It structures content around the four attributes AI models cite most — stack height, drop, carbon plate geometry, and durability data — using explicit numeric claims that earn 3× higher citation rates than subjective descriptors.';
-    body = '# The marathon runner’s guide to long-distance shoe performance\n\nWhen AI models answer queries about marathon shoes, a handful of performance attributes dominate every recommendation: cushioning stack height, heel-to-toe drop, carbon plate technology, and long-run durability.\n\n## What AI citations prioritise\n\nAnalysis of 2,400 AI-generated responses across ChatGPT, Perplexity, and Gemini shows that factual, spec-driven content earns citations at 3.2× the rate of opinion-based editorial. Brands that structure content around measurable claims — “38mm stack height”, “4mm drop”, “300-mile outsole durability” — consistently outrank competitors in AI-generated shortlists.\n\n## Key features to evaluate\n\n**Stack height** determines long-run cushioning. Models recommend 36–40mm for marathon distances, citing reduced fatigue after the 30km mark.\n\n**Heel-to-toe drop** affects strike pattern. A 4–6mm drop suits mid-foot strikers; zero drop requires a 12-week adaptation period that AI models frequently flag as an injury risk.\n\n**Carbon plate** options from Adidas Running and Nike Running dominate AI citation counts in the performance tier.\n\n**Durability** claims backed by kilometre data outperform subjective descriptors. “450km outsole lifespan on asphalt” converts better than “long-lasting build quality.”\n\n## Building content AI models cite\n\nStructure content with clear ## headings, explicit numeric claims, and comparison context. AI models reward content that helps users make decisions — not content that simply promotes a product.';
+    body = '# The marathon runner\'s guide to long-distance shoe performance\n\nWhen AI models answer queries about marathon shoes, a handful of performance attributes dominate every recommendation: cushioning stack height, heel-to-toe drop, carbon plate technology, and long-run durability.\n\n## What AI citations prioritise\n\nAnalysis of 2,400 AI-generated responses across ChatGPT, Perplexity, and Gemini shows that factual, spec-driven content earns citations at 3.2x the rate of opinion-based editorial. Brands that structure content around measurable claims consistently outrank competitors in AI-generated shortlists.\n\n## Key features to evaluate\n\n**Stack height** determines long-run cushioning. Models recommend 36-40mm for marathon distances, citing reduced fatigue after the 30km mark.\n\n**Heel-to-toe drop** affects strike pattern. A 4-6mm drop suits mid-foot strikers; zero drop requires a 12-week adaptation period that AI models frequently flag as an injury risk.\n\n**Carbon plate** options from Adidas Running and Nike Running dominate AI citation counts in the performance tier.\n\n**Durability** claims backed by kilometre data outperform subjective descriptors. "450km outsole lifespan on asphalt" converts better than "long-lasting build quality."\n\n## Top-cited competitors and what they publish\n\n| Brand | Cited in | Key content signal |\n|---|---|---|\n| Nike AlphaFly 3 | 68% of responses | 40mm stack, 4mm drop, carbon fibre plate specs |\n| Adidas Adizero Adios Pro 3 | 54% of responses | 39.5mm, Lightstrike Pro foam, durability test data |\n| HOKA Rocket X2 | 41% of responses | Dual-density midsole, 5mm drop, certified for road race |\n\n## Frequently asked questions\n\n**What are the best marathon running shoes in 2025?**\nThe most AI-cited marathon shoes share three attributes: a cushioning stack of 36-40mm, a heel-to-toe drop of 4-6mm, and a carbon fibre plate. Leading options include the Nike AlphaFly 3, Adidas Adizero Adios Pro 3, and HOKA Rocket X2.\n\n**How do carbon plate marathon shoes compare?**\nCarbon plate shoes typically weigh 210-240g (men\'s UK9) and offer energy return of 85-92% measured by independent lab testing. Plates embedded in Pebax-based foam outperform EVA-based alternatives in AI citation frequency.\n\n**What are the lightest running shoes under 150g?**\nSub-150g racing shoes are optimised for 5K-10K distances. For marathon distances, 200-230g offers the best durability-to-weight trade-off according to AI-cited sports science sources.\n\n## Building content AI models cite\n\nStructure content with clear ## headings, explicit numeric claims, and comparison context. AI models reward content that helps users make decisions.';
   } else if (cats.indexOf('Coffee Pods')!==-1) {
-    brief = 'This article identifies the four citation triggers that dominate AI responses for coffee pod queries: taste specificity, machine compatibility matrices, third-party sustainability certifications, and price-per-cup transparency. It provides actionable content structures for each attribute.';
-    body = '# What AI models recommend when you search for coffee pods\n\nAI models are increasingly the first stop for product research. Understanding what signals drive AI citations is how brands build durable AI visibility.\n\n## How AI evaluates coffee pod content\n\nAcross 1,800 AI-generated coffee pod recommendations, the attributes cited most frequently are: taste profile descriptions, machine compatibility data, sustainability certifications, and price-per-cup transparency.\n\n## Top-cited content attributes\n\n**Taste reviews with specificity** earn citations. “Notes of dark chocolate and dried fruit, medium acidity, intensity 9” outperforms “rich, full-bodied flavour.”\n\n**Machine compatibility** is the most-searched functional attribute. Nespresso Original versus Vertuo distinctions appear in 67% of AI responses.\n\n**Sustainability credentials** matter. Certified compostable pods are cited favourably. Certifications with third-party names drive higher citation rates.\n\n**Price-per-cup** transparency shapes perceived value. Content that states “€0.43 per pod at subscription pricing” performs better than “affordable premium coffee.”\n\n## Building content AI models cite\n\nPublish content that answers the specific questions AI models receive. State intensity ratings, origin data, and machine compatibility in the first 150 words.';
+    body = '# What AI models recommend when you search for coffee pods\n\nAI models are increasingly the first stop for product research. Understanding what signals drive AI citations is how brands build durable AI visibility.\n\n## How AI evaluates coffee pod content\n\nAcross 1,800 AI-generated coffee pod recommendations, the attributes cited most frequently are: taste profile descriptions, machine compatibility data, sustainability certifications, and price-per-cup transparency.\n\n## Top-cited content attributes\n\n**Taste reviews with specificity** earn citations. "Notes of dark chocolate and dried fruit, medium acidity, intensity 9" outperforms "rich, full-bodied flavour."\n\n**Machine compatibility** is the most-searched functional attribute. Nespresso Original versus Vertuo distinctions appear in 67% of AI responses.\n\n**Sustainability credentials** matter. Certified compostable pods are cited favourably. Certifications with third-party names drive higher citation rates.\n\n**Price-per-cup** transparency shapes perceived value. Content that states "0.43 per pod at subscription pricing" performs better than "affordable premium coffee."\n\n## Compatibility guide\n\n| Pod type | Compatible machines | Intensity range |\n|---|---|---|\n| Nespresso Original | Essenza, Pixie, Citiz, Inissia | 5-13 |\n| Nespresso Vertuo | Vertuo, VertuoPlus, VertuoNext | 4-12 |\n| Dolce Gusto | Genio, Piccolo, Drop | 3-11 |\n| Senseo | HD series | 5-8 |\n\n## Frequently asked questions\n\n**What are the best coffee pods for Nespresso in 2025?**\nThe most AI-cited Nespresso-compatible pods share three attributes: an intensity rating above 8, clear origin labelling, and third-party compostability certification.\n\n**Which coffee capsules are most sustainable?**\nSustainability claims earn AI citations when backed by named certifications: Rainforest Alliance, Fairtrade, or B Corp. Pods with aluminium recycling programmes are cited 1.8x more than those without.\n\n**What are the best value espresso pods under 0.50?**\nAt the sub-0.50 price point, the AI-cited differentiators are intensity consistency and universal compatibility claims backed by machine model lists.\n\n## Building content AI models cite\n\nPublish content that answers the specific questions AI models receive. State intensity ratings, origin data, and machine compatibility in the first 150 words.';
   } else {
     var catName = cats.length ? cats[0] : 'your products';
-    brief = 'This article addresses the highest-visibility gaps for '+catName+' queries, providing structured, spec-driven content optimised for AI citation across all major LLMs. Each section is designed to maximise citation frequency by anchoring claims to measurable data and comparison context.';
-    body = '# AI visibility guide: '+catName+'\n\nAI models are reshaping how consumers discover products. For brands in '+catName+', building AI-cited content means structuring information around the attributes these models are trained to prioritise.\n\n## What AI models prioritise\n\nAcross thousands of AI-generated responses, factual, specification-driven content consistently earns 3× more citations than opinion-based editorial. Structure your content around measurable claims.\n\n## Key content attributes\n\n**Specific product specifications** with numbers, measurements, and comparison data earn higher citation rates than vague descriptors.\n\n**Comparison context** helps AI models position your products relative to alternatives — include head-to-head data where possible.\n\n**Third-party validation** such as certifications, test data, and review scores significantly increases citation probability.\n\n**Use-case matching** ties specifications to real customer scenarios, the primary way AI models generate personalised recommendations.\n\n## Implementation strategy\n\nPublish content with clear ## headings, explicit numeric claims, and comparison tables. Refresh this content quarterly as AI model training data evolves.';
+    body = '# AI visibility guide: '+catName+'\n\nAI models are reshaping how consumers discover products. For brands in '+catName+', building AI-cited content means structuring information around the attributes these models prioritise.\n\n## What AI models prioritise\n\nAcross thousands of AI-generated responses, factual, specification-driven content consistently earns 3x more citations than opinion-based editorial. Structure your content around measurable claims.\n\n## Key content attributes\n\n**Specific product specifications** with numbers, measurements, and comparison data earn higher citation rates than vague descriptors.\n\n**Comparison context** helps AI models position your products relative to alternatives.\n\n**Third-party validation** such as certifications, test data, and review scores significantly increases citation probability.\n\n## Frequently asked questions\n\n**What are the best '+catName.toLowerCase()+' products in 2025?**\nAI models consistently favour content that leads with measurable specifications, comparison data, and third-party validation.\n\n**How do I compare '+catName.toLowerCase()+' options?**\nPublish a structured comparison table with consistent attributes. AI models cite tabular data at 3x the rate of prose comparisons.\n\n## Implementation strategy\n\nPublish content with clear ## headings, explicit numeric claims, and comparison tables. Refresh quarterly as AI model training data evolves.';
   }
   modal._generatedBrief = brief;
   modal._generatedBody = body;
 
   document.getElementById('modal-body').innerHTML =
     '<div class="review-three-col">' +
-      '<div class="review-col-brief">' +
-        '<div class="card-label">Brief</div>' +
-        '<div class="review-brief-card"><p style="font-size:13px;color:var(--color-text-secondary);line-height:1.6">'+escapeHtml(brief)+'</p></div>' +
+      '<div class="review-col-brief" style="display:flex;flex-direction:column;gap:8px">' +
+        '<div class="card-label" style="margin-bottom:0">Generation prompt</div>' +
+        '<div class="prompt-col-body">' +
+          '<textarea class="prompt-textarea" id="modal-brief-ta" style="min-height:300px">'+escapeHtml(brief)+'</textarea>' +
+          '<button class="btn-regenerate" id="modal-btn-regenerate">Regenerate content</button>' +
+        '</div>' +
       '</div>' +
       '<div class="review-col-content">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
@@ -1569,9 +2109,16 @@ function syncModalState() {
     var selLang = document.getElementById('sel-language');
     if (selFmt) modal.format = selFmt.value;
     if (selLang) modal.language = selLang.value;
-  } else if (modal.step===3) {
+  } else if (modal.step===4) {
+    var selFmt = document.getElementById('sel-format');
+    var selLang = document.getElementById('sel-language');
+    if (selFmt) modal.format = selFmt.value;
+    if (selLang) modal.language = selLang.value;
     if (msInstances.brandKits) modal.brandKits = msInstances.brandKits.getSelected();
     if (msInstances.knowledgeBases) modal.knowledgeBases = msInstances.knowledgeBases.getSelected();
+  } else if (modal.step===5) {
+    var briefTa = document.getElementById('brief-step-ta');
+    if (briefTa) modal._generatedBrief = briefTa.value;
   }
 }
 
@@ -1587,7 +2134,7 @@ function approveAndSave() {
   library.unshift({
     id: 'art-' + Date.now(),
     title: title,
-    brief: modal._generatedBrief || '',
+    brief: (document.getElementById('modal-brief-ta') || {value: modal._generatedBrief || ''}).value,
     format: fmt,
     categories: cats.slice(),
     markets: modal.markets.slice(),
@@ -1609,6 +2156,13 @@ function approveAndSave() {
 // ============================================================
 function init() {
   renderLibrary();
+
+  // Close export dropdowns on outside click
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.export-menu-wrap')) {
+      document.querySelectorAll('.export-dropdown').forEach(function(d){ d.classList.remove('open'); });
+    }
+  });
 
   // NAV TABS
   document.querySelector('.nav-tabs').addEventListener('click', function(e){
@@ -1669,12 +2223,65 @@ function init() {
   document.getElementById('btn-save-version').addEventListener('click', function(){
     var ta = document.getElementById('detail-content-textarea');
     if (!ta || !currentDetailId) return;
-    saveNewVersion(currentDetailId, ta.value, 'Manual edit');
+    var briefTaSave = document.getElementById('detail-brief-ta');
     var article = findArticle(currentDetailId);
+    if (article && briefTaSave) article.brief = briefTaSave.value;
+    saveNewVersion(currentDetailId, ta.value, 'Manual edit');
+    article = findArticle(currentDetailId);
     currentDetailVersion = article.versions.length-1;
     isEditing = false;
     renderDetailView(article, currentDetailVersion);
     showToast('New version saved.', 'success');
+  });
+
+  // DETAIL REGENERATE FROM PROMPT
+  document.getElementById('detail-btn-regenerate').addEventListener('click', function() {
+    var promptTa  = document.getElementById('detail-brief-ta');
+    var contentTa = document.getElementById('detail-content-textarea');
+    var btn       = document.getElementById('detail-btn-regenerate');
+    if (!promptTa || !contentTa || !currentDetailId) return;
+    var article = findArticle(currentDetailId);
+    if (article) article.brief = promptTa.value;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="regen-spin"></span>Regenerating...';
+    setTimeout(function() {
+      var newBody = applyRefineInstruction(contentTa.value, 'Optimise for AI citations');
+      contentTa.value = newBody;
+      // Also update preview pane if visible
+      var preview = document.getElementById('detail-content-preview');
+      if (preview && preview.style.display !== 'none') preview.innerHTML = markdownToHtml(newBody);
+      btn.disabled = false;
+      btn.innerHTML = 'Regenerate content';
+      showToast('Content regenerated · 50 credits used', 'success');
+    }, 2200);
+  });
+
+  // DETAIL COPY / DOWNLOAD BUTTONS
+  document.getElementById('btn-detail-copy').addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleExportDropdown('detail-copy-dropdown');
+  });
+  document.getElementById('btn-detail-download').addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleExportDropdown('detail-download-dropdown');
+  });
+  document.getElementById('detail-copy-dropdown').addEventListener('click', function(e) {
+    var item = e.target.closest('[data-export]');
+    if (!item) return;
+    var article = findArticle(currentDetailId);
+    if (!article) return;
+    var ver = article.versions[currentDetailVersion];
+    handleExport(item.getAttribute('data-export'), ver.body, article.title);
+    document.getElementById('detail-copy-dropdown').classList.remove('open');
+  });
+  document.getElementById('detail-download-dropdown').addEventListener('click', function(e) {
+    var item = e.target.closest('[data-export]');
+    if (!item) return;
+    var article = findArticle(currentDetailId);
+    if (!article) return;
+    var ver = article.versions[currentDetailVersion];
+    handleExport(item.getAttribute('data-export'), ver.body, article.title);
+    document.getElementById('detail-download-dropdown').classList.remove('open');
   });
 
   // DETAIL CONTENT CARD ACTIONS
@@ -1778,16 +2385,56 @@ function init() {
   // MODAL FOOTER
   document.getElementById('modal-footer').addEventListener('click', function(e){
     if (e.target.closest('#modal-btn-back')) {
-      syncModalState(); modal.step--; renderModal(); return;
+      syncModalState();
+      if (modal.step===6 && genState.active) {
+        genState.timers.forEach(clearTimeout);
+        genState.timers = [];
+        genState.active = false;
+        genState.step = -1;
+        var genIdx = library.findIndex(function(a){ return a.id===genState.articleId && a.status==='generating'; });
+        if (genIdx !== -1) { library.splice(genIdx, 1); renderLibrary(); }
+        genState.articleId = null;
+      }
+      modal.step--; renderModal(); return;
     }
     if (e.target.closest('#modal-btn-next')) {
       syncModalState();
-      // Validate step 1
       if (modal.step===1 && modal.categories.length===0) { showToast('Please select at least one product category.'); return; }
-      if (modal.step===4) { modal.allCitations = []; modal.selectedCitations = []; }
+      if (modal.step===1) { modal.allCitations = []; modal.selectedCitations = []; }
+      if (modal.step===5) {
+        var briefTa = document.getElementById('brief-step-ta');
+        if (briefTa) modal._generatedBrief = briefTa.value;
+        if (!spendCredits(50)) return;
+        initGeneration();
+      }
       modal.step++; renderModal(); return;
     }
+    if (e.target.closest('#btn-gen-bg')) {
+      genState.modalOpen = false;
+      closeModal();
+      showToast('Generating in the background — we\'ll notify you when it\'s ready.');
+      return;
+    }
     if (e.target.closest('#modal-btn-approve')) { approveAndSave(); return; }
+    if (e.target.closest('#btn-modal-copy')) {
+      e.stopPropagation();
+      toggleExportDropdown('modal-copy-dropdown');
+      return;
+    }
+    if (e.target.closest('#btn-modal-download')) {
+      e.stopPropagation();
+      toggleExportDropdown('modal-download-dropdown');
+      return;
+    }
+    var modalExportItem = e.target.closest('[data-modal-export]');
+    if (modalExportItem) {
+      var ta = document.getElementById('modal-content-ta');
+      var body = ta ? ta.value : (modal._generatedBody || '');
+      var title = body.split('\n')[0].replace(/^#+\s*/, '') || 'article';
+      handleExport(modalExportItem.getAttribute('data-modal-export'), body, title);
+      document.querySelectorAll('.export-dropdown').forEach(function(d){ d.classList.remove('open'); });
+      return;
+    }
     if (e.target.closest('#modal-btn-deselall')) {
       modal.selectedCitations = [];
       document.getElementById('modal-body').innerHTML = renderStep4();
@@ -1879,6 +2526,34 @@ function init() {
         }
         input.value = '';
       }
+    }
+
+    // Modal regenerate from prompt
+    if (e.target.closest('#modal-btn-regenerate')) {
+      var promptTa = document.getElementById('modal-brief-ta');
+      var contentTa = document.getElementById('modal-content-ta');
+      var regenBtn = document.getElementById('modal-btn-regenerate');
+      if (!promptTa || !contentTa || !regenBtn) return;
+      modal._generatedBrief = promptTa.value;
+      regenBtn.disabled = true;
+      regenBtn.innerHTML = '<span class="regen-spin"></span>Regenerating...';
+      setTimeout(function() {
+        var newBody = applyRefineInstruction(modal._generatedBody, 'Optimise for AI citations');
+        contentTa.value = newBody;
+        modal._generatedBody = newBody;
+        // Reset to Edit tab view
+        var preview = document.getElementById('modal-content-preview');
+        if (preview) preview.style.display = 'none';
+        contentTa.style.display = 'block';
+        var tabEdit = document.getElementById('modal-tab-edit');
+        var tabPrev = document.getElementById('modal-tab-preview');
+        if (tabEdit) tabEdit.classList.add('active');
+        if (tabPrev) tabPrev.classList.remove('active');
+        regenBtn.disabled = false;
+        regenBtn.innerHTML = 'Regenerate content';
+        showToast('Content regenerated · 50 credits used', 'success');
+      }, 2200);
+      return;
     }
 
     // Modal preview/edit toggle
