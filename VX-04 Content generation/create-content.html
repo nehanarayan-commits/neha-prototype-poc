@@ -127,7 +127,7 @@ body{
 .preview-pane{border:1px solid var(--color-border-secondary);border-radius:6px;padding:14px;min-height:300px;overflow-y:auto}
 .lib-search-wrap{position:relative;display:flex;align-items:center}
 .lib-search-icon{position:absolute;left:9px;pointer-events:none}
-.lib-search-input{height:34px;width:280px;padding:0 10px 0 30px;border:1px solid var(--color-border-secondary);border-radius:6px;font-size:13px;font-family:inherit;color:var(--color-text-primary);background:var(--color-background-secondary);outline:none;transition:border-color 0.15s}
+.lib-search-input{height:36px;width:420px;padding:0 10px 0 32px;border:1px solid var(--surface-400);border-radius:4px;font-size:13px;font-family:inherit;color:var(--color-text-primary);background:#fff;outline:none;transition:border-color 0.15s}
 .lib-search-input::placeholder{color:var(--color-text-tertiary)}
 .lib-search-input:focus{border-color:var(--coral)}
 .btn{
@@ -478,6 +478,7 @@ body{
 }
 .gap-red{background:#FCEBEB;color:#791F1F}
 .gap-amber{background:#FAEEDA;color:#633806}
+.gap-grey{background:#F4F5F7;color:#494949}
 .gap-green{background:#E1F5EE;color:#085041}
 /* STEP 4 CITATIONS */
 .opp-banner{
@@ -668,11 +669,13 @@ body{
         <span class="library-title">Content library</span>
         <span class="library-count" id="lib-count"></span>
       </div>
-      <div class="lib-search-wrap">
-        <svg class="lib-search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#8A8A8A" stroke-width="1.4"/><path d="M9.5 9.5L12.5 12.5" stroke="#8A8A8A" stroke-width="1.4" stroke-linecap="round"/></svg>
-        <input type="text" id="lib-search-input" class="lib-search-input" placeholder="Search by title, format or category…">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="lib-search-wrap">
+          <svg class="lib-search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#8A8A8A" stroke-width="1.4"/><path d="M9.5 9.5L12.5 12.5" stroke="#8A8A8A" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <input type="text" id="lib-search-input" class="lib-search-input" placeholder="Search by title, format or category…">
+        </div>
+        <button class="btn btn-coral" id="btn-gen-header">+ Generate content</button>
       </div>
-      <button class="btn btn-coral" id="btn-gen-header">+ Generate content</button>
     </div>
     <div class="filter-pills" id="filter-pills">
       <div class="filter-pill active" data-filter="all">All</div>
@@ -793,6 +796,17 @@ var GEN_STEPS = [
 var GEN_STEP_DELAYS    = [3000, 6000, 9000, 12000, 15000];
 var GEN_PROGRESS_PCTS  = [18,   38,   62,   82,    100];
 var GEN_COMPLETE_DELAY = 16500;
+
+var REGEN_STEPS = [
+  {label:'Applying your updated prompt',         sub:'Loading your edits and citation context'},
+  {label:'Identifying revised themes & gaps',    sub:'Analysing what changed in your requirements'},
+  {label:'Rewriting your article draft',         sub:'Generating updated content from your prompt'},
+  {label:'Optimising for AI citations',          sub:'Structuring headings, tables, and FAQ for AEO'},
+  {label:'Formatting & finalising',              sub:'Applying brand tone, markdown structure & metadata'}
+];
+var REGEN_STEP_DELAYS    = [1500, 3000, 4500, 6000, 7500];
+var REGEN_PROGRESS_PCTS  = [18,   38,   62,   82,   100];
+var REGEN_COMPLETE_DELAY = 8700;
 
 var genState = {active:false, step:-1, articleId:null, timers:[], modalOpen:false};
 var credits = 124;
@@ -1689,6 +1703,54 @@ function renderGenProgress() {
   '</div>';
 }
 
+function renderRegenProgress() {
+  var stepsHtml = REGEN_STEPS.map(function(s, i) {
+    return '<div class="gen-step gs-pending" id="regen-step-'+i+'">' +
+      '<div class="gen-step-icon">'+(i+1)+'</div>' +
+      '<div class="gen-step-text">' +
+        '<div class="gen-step-label">'+escapeHtml(s.label)+'</div>' +
+        '<div class="gen-step-sub">'+escapeHtml(s.sub)+'</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  return '<div class="gen-progress-wrap">' +
+    '<div class="gen-head">Regenerating your content…</div>' +
+    '<div class="gen-subhead">Applying your updated prompt. This usually takes about a minute.</div>' +
+    '<div class="gen-bar-row"><div class="gen-bar-track"><div class="gen-bar-fill" id="regen-fill"></div></div><span class="gen-bar-pct" id="regen-pct">0%</span></div>' +
+    '<div class="gen-step-list" id="regen-step-list">'+stepsHtml+'</div>' +
+  '</div>';
+}
+
+function runRegenSteps(onComplete) {
+  var timers = [];
+  REGEN_STEP_DELAYS.forEach(function(delay, i) {
+    timers.push(setTimeout(function() {
+      document.querySelectorAll('[id^="regen-step-"]').forEach(function(el, idx) {
+        var cls = idx < i ? 'gs-done' : idx === i ? 'gs-active' : 'gs-pending';
+        el.className = 'gen-step ' + cls;
+        var icon = el.querySelector('.gen-step-icon');
+        if (!icon) return;
+        if (idx < i)      icon.innerHTML = '&#10003;';
+        else if (idx===i) icon.innerHTML = '<div style="width:10px;height:10px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite"></div>';
+        else              icon.innerHTML = idx + 1;
+      });
+      var fill = document.getElementById('regen-fill');
+      var pct  = document.getElementById('regen-pct');
+      if (fill) fill.style.width = REGEN_PROGRESS_PCTS[i] + '%';
+      if (pct)  pct.textContent  = REGEN_PROGRESS_PCTS[i] + '%';
+    }, delay));
+  });
+  timers.push(setTimeout(function() {
+    document.querySelectorAll('[id^="regen-step-"]').forEach(function(el) {
+      el.className = 'gen-step gs-done';
+      var icon = el.querySelector('.gen-step-icon');
+      if (icon) icon.innerHTML = '&#10003;';
+    });
+    onComplete();
+  }, REGEN_COMPLETE_DELAY));
+  return timers;
+}
+
 function initGeneration() {
   genState.timers.forEach(clearTimeout);
   var genArt = {
@@ -1771,7 +1833,7 @@ function renderStep3Content() {
   var html = '<div class="prompts-header"><span class="prompts-count">'+prompts.length+' prompts found</span><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" id="prompts-sel-all">Select all</button><button class="btn btn-ghost btn-sm" id="prompts-desel-all">Deselect all</button></div></div>';
   prompts.forEach(function(p){
     var gap = p.compAvg - p.myVis;
-    var gapCls = gap>=30?'gap-red':gap>=15?'gap-amber':'gap-green';
+    var gapCls = gap>=30?'gap-red':gap>=15?'gap-amber':gap>0?'gap-grey':'gap-green';
     var gapText = gap > 0 ? gap+'pp behind' : gap < 0 ? Math.abs(gap)+'pp ahead' : 'At average';
     var isSel = modal.selectedPrompts.indexOf(p.text)!==-1;
     html += '<div class="prompt-row'+(isSel?' selected':'')+'" data-prompt="'+escapeHtml(p.text)+'">' +
@@ -2237,23 +2299,24 @@ function init() {
   // DETAIL REGENERATE FROM PROMPT
   document.getElementById('detail-btn-regenerate').addEventListener('click', function() {
     var promptTa  = document.getElementById('detail-brief-ta');
-    var contentTa = document.getElementById('detail-content-textarea');
-    var btn       = document.getElementById('detail-btn-regenerate');
-    if (!promptTa || !contentTa || !currentDetailId) return;
+    var contentCard = document.getElementById('detail-content-card');
+    if (!promptTa || !contentCard || !currentDetailId) return;
     var article = findArticle(currentDetailId);
     if (article) article.brief = promptTa.value;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="regen-spin"></span>Regenerating...';
-    setTimeout(function() {
-      var newBody = applyRefineInstruction(contentTa.value, 'Optimise for AI citations');
-      contentTa.value = newBody;
-      // Also update preview pane if visible
-      var preview = document.getElementById('detail-content-preview');
-      if (preview && preview.style.display !== 'none') preview.innerHTML = markdownToHtml(newBody);
-      btn.disabled = false;
-      btn.innerHTML = 'Regenerate content';
+    // Snapshot current content before replacing the column
+    var prevBody = (document.getElementById('detail-content-textarea') || {value: ''}).value;
+    contentCard.innerHTML = renderRegenProgress();
+    runRegenSteps(function() {
+      var newBody = applyRefineInstruction(prevBody, 'Optimise for AI citations');
+      // Restore content column via renderDetailView
+      if (article) {
+        // Store new body temporarily so renderDetailView picks it up
+        var ver = article.versions[currentDetailVersion];
+        if (ver) ver.body = newBody;
+      }
+      renderDetailView(article, currentDetailVersion);
       showToast('Content regenerated · 50 credits used', 'success');
-    }, 2200);
+    });
   });
 
   // DETAIL COPY / DOWNLOAD BUTTONS
@@ -2531,28 +2594,18 @@ function init() {
     // Modal regenerate from prompt
     if (e.target.closest('#modal-btn-regenerate')) {
       var promptTa = document.getElementById('modal-brief-ta');
-      var contentTa = document.getElementById('modal-content-ta');
-      var regenBtn = document.getElementById('modal-btn-regenerate');
-      if (!promptTa || !contentTa || !regenBtn) return;
+      if (!promptTa) return;
       modal._generatedBrief = promptTa.value;
-      regenBtn.disabled = true;
-      regenBtn.innerHTML = '<span class="regen-spin"></span>Regenerating...';
-      setTimeout(function() {
+      // Show progress in modal body; suppress footer actions
+      document.getElementById('modal-body').innerHTML = renderRegenProgress();
+      document.getElementById('modal-footer').innerHTML = '<div class="modal-footer-spacer"></div><span style="font-size:12px;color:var(--color-text-secondary)">Regenerating your content…</span>';
+      runRegenSteps(function() {
         var newBody = applyRefineInstruction(modal._generatedBody, 'Optimise for AI citations');
-        contentTa.value = newBody;
         modal._generatedBody = newBody;
-        // Reset to Edit tab view
-        var preview = document.getElementById('modal-content-preview');
-        if (preview) preview.style.display = 'none';
-        contentTa.style.display = 'block';
-        var tabEdit = document.getElementById('modal-tab-edit');
-        var tabPrev = document.getElementById('modal-tab-preview');
-        if (tabEdit) tabEdit.classList.add('active');
-        if (tabPrev) tabPrev.classList.remove('active');
-        regenBtn.disabled = false;
-        regenBtn.innerHTML = 'Regenerate content';
+        runStep6();
+        renderModalFooter();
         showToast('Content regenerated · 50 credits used', 'success');
-      }, 2200);
+      });
       return;
     }
 
